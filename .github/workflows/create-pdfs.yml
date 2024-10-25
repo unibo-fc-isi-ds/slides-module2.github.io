@@ -26,7 +26,7 @@ jobs:
         with:
           fetch-depth: 0
           path: pages
-          ref: main
+          ref: master
           repository: unibo-fc-isi-ds/slides-module2.github.io
       - name: Count the commits so far
         id: commit-counter
