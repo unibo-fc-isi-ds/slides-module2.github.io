@@ -1,0 +1,60 @@
+name: Create and deploy the PDFs
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["pages-build-deployment"]
+    types:
+      - completed
+
+jobs:
+  create-and-deploy-pdfs:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pdf-slides-${{ github.event_name }}-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      # Checkout the repository
+      - name: Checkout the pdf creation script
+        uses: actions/checkout@v4.2.2
+        with:
+          repository: unibo-fc-isi-ds/slides-module2
+          submodules: recursive
+      - name: Checkout the current website
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          path: pages
+          ref: main
+          repository: unibo-fc-isi-ds/slides-module2.github.io
+      - name: Count the commits so far
+        id: commit-counter
+        run: echo "commits=$(git -C pages rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Create version
+        id: version-compute
+        run: echo "version=${{ steps.commit-counter.outputs.commits }}.$(date +"%Y.%-m%d")" >> "$GITHUB_OUTPUT"
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.197.0
+        with:
+          working-directory: shared-slides
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
+      - name: Update the apt database
+        run: sudo apt-get update
+      - name: Install pdfinfo
+        run: sudo apt-get install -y poppler-utils
+      - name: Make the pdfs
+        run: shared-slides/makepdfs.rb pages
+      - name: Deliver the pdfs
+        if: github.event_name == 'workflow_run'
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          allowUpdates: true
+          artifacts: "*.pdf"
+          replacesArtifacts: true
+          repo: unibo-fc-isi-ds/slides-module2
+          tag: ${{ steps.version-compute.outputs.version }}
+          token: ${{ secrets.DEPLOYMENT_TOKEN }}
