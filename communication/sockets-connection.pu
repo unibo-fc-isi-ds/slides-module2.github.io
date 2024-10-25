@@ -1,0 +1,103 @@
+@startuml
+'hide footbox
+skinparam BoxPadding 10
+
+box "Host 1" #LightBlue
+	control Server
+	participant OS1 
+	' boundary Socket2
+
+== server listening ==
+
+	Server -> OS1 :  ""new ServerSocket()""
+	activate Server
+
+	create boundary ServerSocket
+	OS1 -> ServerSocket : creation
+	Server <-- ServerSocket : return reference to caller
+	deactivate Server
+
+	Server -> ServerSocket : ""bind(WELL_KNOWN_PORT)""
+	activate Server
+	ServerSocket -> OS1 : reserve ""WELL_KNOWN_PORT""
+	alt#Gold #LightGreen ""WELL_KNOWN_PORT"" is available on OS1
+		Server <-- ServerSocket : returns ""void""
+	else #Pink ""WELL_KNOWN_PORT"" is busy on OS1
+		Server <-- ServerSocket : throws ""BindException""
+	end
+	deactivate Server
+
+	Server -> ServerSocket: ""accept()""
+	activate Server
+	ServerSocket -> OS1 : listen for connections on ""WELL_KNOWN_PORT""
+	
+	create boundary Socket2
+	
+	OS1 -> Socket2: creation
+
+end box
+
+box "Host 2"
+
+	participant OS2
+	control Client
+
+	== client connecting ==
+
+	OS2 <- Client : ""new Socket()""
+	activate Client
+
+	create boundary Socket1
+	OS2 -> Socket1 : creation
+	Socket1 --> Client : return reference to caller
+	deactivate Client
+
+	Socket1 <- Client : ""connect("Host 1", WELL_KNOWN_PORT)""
+	activate Client
+	Socket1 -> OS2 : connection request for ""Host 1""
+
+	OS2 -> OS1 : connection request from ""Host 2""
+
+	alt#Gold #LightGreen ""Host 1"" is reachable on the network & there exists a process on it listening on ""WELL_KNOWN_PORT""
+
+		OS1 --> OS2 : connection established with ""Host 2""
+
+		OS2 --> Socket1 : connection established with ""Host 1""
+
+		Socket1 --> Client : returns ""void""
+
+		note right of Client: Client is connected now,\nand ready to interact
+		
+	else #Pink Cannot contact host within timeout
+
+		OS2 --> Socket1 : cannot contact ""Host 1""
+
+		Socket1 --> Client : throws ""SocketTimeoutException""
+		
+
+	else #LightGray ""Host 1"" is reachable on the network BUT it has no service listening on ""WELL_KNOWN_PORT""
+
+		OS1 --> OS2 : connection refused
+
+		OS2 --> Socket1 : connection refused from ""Host 1""
+
+		Socket1 --> Client : throws ""IOException""
+
+	end
+	deactivate Client
+
+end box
+
+== in the meanwhile on the server side ==
+
+	alt#Gold #LightGreen ""Host 1"" is reachable on the network & there exists a process on it listening on ""WELL_KNOWN_PORT""
+
+	OS1 -> Socket2 : bind to ephemeral port\nconnect to Socket1
+
+	Socket2 --> Server : return reference to caller of //accept()//
+	deactivate Server
+
+	note left of Server : Server is connected now,\nand ready to interact
+
+end
+@enduml

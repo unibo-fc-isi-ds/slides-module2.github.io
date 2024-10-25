@@ -1,0 +1,30 @@
+@startuml
+
+hide footbox
+
+actor "User 1" as User1
+participant "Terminal 1" as Terminal1
+participant Coordinator
+participant "Terminal 2" as Terminal2
+actor "User 2" as User2
+
+group Loop
+
+User1 -> Terminal1: press K_A
+Terminal1 -> Coordinator: { input: K_A, from: Terminal_1 }
+
+User2 -> Terminal2: press K_B
+Terminal2 -> Coordinator: { input: K_B, from: Terminal_B}
+
+== after 1/FPS seconds ==
+
+'Coordinator -> Coordinator: update game state:\n\tinputs=[K_A, K_B]\n\tdt=1/FPS
+Coordinator -> Coordinator: inputs = [K_A, K_B]\ndt = 1/FPS\nS' = update_game_state(S, inputs, dt)
+Coordinator -> Terminal1: S'
+Coordinator -> Terminal2: S'
+
+Terminal1 -> Terminal1: render S'
+Terminal2 -> Terminal2: render S'
+
+end
+@enduml
