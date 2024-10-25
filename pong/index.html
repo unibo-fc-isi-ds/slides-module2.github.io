@@ -1,0 +1,1889 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+<title>Distributed Pong</title>
+<meta name="description" content="A running example for 'Distributed Systems — Module 2', based on the classic game Pong">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><link rel="stylesheet" href="/slides-module2.github.io/reveal-js/dist/reset.css">
+<link rel="stylesheet" href="/slides-module2.github.io/reveal-js/dist/reveal.css">
+  <link rel="stylesheet" href="/slides-module2.github.io/css/custom-theme.min.e415e19db372f1135499fc2ea3a836cea3f048a00982e05f2d60d127261af094.css" id="theme"><link rel="stylesheet" href="/slides-module2.github.io/highlight-js/solarized-dark.min.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto Mono" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Oxygen Mono" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/gh/DanySK/css-blur-animation/blur.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://kit.fontawesome.com/81ac037be0.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+<script src="https://unibo-fc-isi-ds/slides-module2.github.io//plantuml.js"></script>
+
+  </head>
+  <body>
+    
+    <div class="reveal">
+      <div class="slides">
+  
+
+    <section><h1 id="distributed-pong">Distributed Pong</h1>
+<br>
+<h2 id="hahahugoshortcode1s0hbhb">Distributes Systems — Module 2</h2>
+<h3 id="hahahugoshortcode1s1hbhb">A.Y. 2024/2025</h3>
+<h3 id="hahahugoshortcode1s2hbhb"><a href="mailto:giovanni.ciatto@unibo.it">Giovanni Ciatto</a></h3>
+<br>
+<br>
+<p>Compiled on: 2024-10-25
+ — <a href="?print-pdf&amp;pdfSeparateFragments=false"><i class="fa fa-print" aria-hidden="true"></i> printable version</a></p>
+<p><a href="../#/toc"><i class="fa fa-undo" aria-hidden="true"></i> back to ToC</a></p>
+</section><section>
+<h2 id="whats-pong">What’s Pong?</h2>
+<p><a href="https://en.wikipedia.org/wiki/Pong">https://en.wikipedia.org/wiki/Pong</a></p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Pong_Game_Test2.gif" alt="Pong screenshot"></p>
+</section><section>
+<h2 id="goal">Goal</h2>
+<p>In this running example we are going to</p>
+<ul>
+<li>implement a <strong>distributed</strong> version of the classic game Pong</li>
+<li>in <a href="https://www.python.org">Python</a></li>
+<li>using <a href="https://www.pygame.org">PyGame</a></li>
+</ul>
+<p>in order to exemplify the <em>development</em> of a distributed system <em>project</em>.</p>
+</section><section>
+<h2 id="spoiler">Spoiler</h2>
+<p>Here’s an overview of the final result:</p>
+
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><p><img src="dpongpy.png" alt="dpongpy screenshot"></p>
+</div>
+<div class="col " style="text-align: left;"><p>Source code at: <a href="https://github.com/unibo-fc-isi-ds/dpongpy">https://github.com/unibo-fc-isi-ds/dpongpy</a></p>
+<p>Go on, play with it!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span>git clone https://github.com/unibo-fc-isi-ds/dpongpy
+</span></span><span style="display:flex;"><span><span style="color:#204a87">cd</span> dpongpy
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># may require pip install -r requirements.txt if poetry is missing</span>
+</span></span><span style="display:flex;"><span>poetry install
+</span></span><span style="display:flex;"><span>poetry run python -m dpongpy --mode <span style="color:#204a87">local</span>
+</span></span></code></pre></div><br>
+<p>Default key bindings:</p>
+<ul>
+<li><em>Left</em> paddle: <strong>WASD</strong></li>
+<li><em>Right</em> paddle: <strong>Arrow keys</strong></li>
+</ul>
+</div>
+</div>
+</div>
+</section><section>
+<h2 id="what-is-pygame">What is PyGame?</h2>
+<ul>
+<li>
+<p><strong>PyGame</strong> is a popular Python library for writing simple games</p>
+</li>
+<li>
+<p>It handles many game development tasks, such as <em>graphics</em>, <em>sound</em>, <em>time</em>, and <em>input management</em>.</p>
+</li>
+<li>
+<p>Simple to use, yet powerful enough to create non-trivial games</p>
+</li>
+<li>
+<p>Lightweight, portable, and easy to install</p>
+<ul>
+<li><code>pip install pygame</code> (better to use a virtual environment)</li>
+</ul>
+</li>
+</ul>
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="game-loop">
+<h2 id="preliminaries">Preliminaries</h2>
+<h1 id="the-game-loop">The Game Loop</h1>
+</section><section>
+<h2 id="what-is-a-game-loop">What is a Game Loop?</h2>
+<ul>
+<li>
+<p>A <strong>game loop</strong> is the main logic cycle of most video-games</p>
+</li>
+<li>
+<p>It continuously runs while the game is active, managing the following aspects:</p>
+<ol>
+<li><strong>Processing user input</strong> (e.g., keyboard, mouse, gamepad)</li>
+<li><strong>Updating the game state</strong> (e.g., moving objects in the virtual space)</li>
+<li><strong>Rendering the game</strong> (e.g., drawing the game world on the screen)</li>
+<li><strong>Simulating the passage of time</strong> in the game (e.g., moving objects even in absence of inputs)</li>
+</ol>
+</li>
+<li>
+<p>Most commonly, some <em>wait</em> is introduced at the end of each cycle</p>
+<ul>
+<li>to control the game’s frame rate</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="the-game-loop-in-pygame">The Game Loop in PyGame</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">pygame</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Initialize Pygame</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">init</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Screen dimensions</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">screen_size</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">800</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">600</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">screen</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">set_mode</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">screen_size</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">set_caption</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"Game Loop Example"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Colours</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">white</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">color</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Color</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">255</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">255</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">255</span><span style="color:#000;font-weight:bold">)</span>  <span style="color:#8f5902;font-style:italic"># White color RGB</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">black</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">color</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Color</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">)</span>  <span style="color:#8f5902;font-style:italic"># Black color RGB</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Circle settings</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">circle_radius</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">min</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">screen_size</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">10</span>  <span style="color:#8f5902;font-style:italic"># Circle radius is 1/10th of the screen size's smallest dimension</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">circle_posistion</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">screen_size</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">2</span>  <span style="color:#8f5902;font-style:italic"># Start at the center</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">circle_speed</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">min</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">screen_size</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">10</span>  <span style="color:#8f5902;font-style:italic"># Absolute speed of the circle is 1/10th of the screen size's smallest dimension</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">circle_velocity</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">)</span>  <span style="color:#8f5902;font-style:italic"># Initial velocity of the circle</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">clock</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">time</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Clock</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Main game loop</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span> <span style="color:#8f5902;font-style:italic"># time elapsed since last loop iteration</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">running</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">True</span> <span style="color:#8f5902;font-style:italic"># game should stop when set to False</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#000">running</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Event handling</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">event</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">get</span><span style="color:#000;font-weight:bold">([</span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYDOWN</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYUP</span><span style="color:#000;font-weight:bold">]):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">key</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_ESCAPE</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">running</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">False</span> <span style="color:#8f5902;font-style:italic"># Quit the game</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">elif</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">key</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_w</span><span style="color:#000;font-weight:bold">:</span>  <span style="color:#8f5902;font-style:italic"># Move up</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">circle_velocity</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">y</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#ce5c00;font-weight:bold">-</span><span style="color:#000">circle_speed</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">type</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYDOWN</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#0000cf;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">elif</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">key</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_s</span><span style="color:#000;font-weight:bold">:</span>  <span style="color:#8f5902;font-style:italic"># Move down</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">circle_velocity</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">y</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">circle_speed</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">type</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYDOWN</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#0000cf;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">elif</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">key</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_a</span><span style="color:#000;font-weight:bold">:</span>  <span style="color:#8f5902;font-style:italic"># Move left</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">circle_velocity</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#ce5c00;font-weight:bold">-</span><span style="color:#000">circle_speed</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">type</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYDOWN</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#0000cf;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">elif</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">key</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_d</span><span style="color:#000;font-weight:bold">:</span>  <span style="color:#8f5902;font-style:italic"># Move right</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">circle_velocity</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">circle_speed</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">type</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYDOWN</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#0000cf;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Clear screen</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">screen</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">fill</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">black</span><span style="color:#000;font-weight:bold">)</span>  <span style="color:#8f5902;font-style:italic"># Black background</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Update and logs the circle's position</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">old_circle_posistion</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">circle_posistion</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">copy</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">circle_posistion</span> <span style="color:#ce5c00;font-weight:bold">+=</span> <span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">*</span> <span style="color:#000">circle_velocity</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">old_circle_posistion</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#000">circle_posistion</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"Circle moves from"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">old_circle_posistion</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">"to"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">circle_posistion</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Draw the circle</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">draw</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">circle</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">screen</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">white</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">circle_posistion</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">circle_radius</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Update the display</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">flip</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Ensure the game runs at 60 FPS</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">clock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">tick</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">60</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">1000</span>  <span style="color:#8f5902;font-style:italic"># Time elapsed since last loop iteration in seconds</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Quit Pygame</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">quit</span><span style="color:#000;font-weight:bold">()</span>
+</span></span></code></pre></div><p>full example <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab1/example1_game_loop.py">on GitHub</a></p>
+</section><section>
+<h4 id="aspects-to-notice-cf-pygame-documentationhttpswwwpygameorgdocsrefeventhtml">Aspects to notice (cf. <a href="https://www.pygame.org/docs/ref/event.html">PyGame documentation</a>):</h4>
+<ul>
+<li>
+<p>PyGame comes with a notion of <em>events</em> and <strong>event queue</strong></p>
+<ul>
+<li>this is good for handling user <em>inputs</em></li>
+</ul>
+</li>
+<li>
+<p>each event had a <em>type</em> (e.g., <code>pygame.KEYDOWN</code> and <code>pygame.KEYUP</code>) and <em>attributes</em> (e.g., <code>event.key</code>)</p>
+<ul>
+<li>there is a <em>class</em> for events, namely <code>pygame.event.Event</code></li>
+<li>event <em>types</em> are indeed <code>int</code>egers</li>
+</ul>
+</li>
+<li>
+<p>events can be <em>retrieved</em> from the queue (e.g., <code>pygame.event.get([RELEVANT_TYPES])</code>)…</p>
+<ul>
+<li>where <code>RELEVANT_TYPES</code> is a <em>list</em> of event <em>types</em> to be retrieved</li>
+</ul>
+</li>
+<li>
+<p>… and possibly <em>provoked</em> (i.e. appended to the queue) by the programmer (e.g., <code>pygame.event.post(event)</code>)</p>
+<ul>
+<li>where <code>event</code> is an instance of <code>pygame.event.Event</code></li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="clean-code-recommendations">Clean Code Recommendations</h2>
+<ol>
+<li>Better to explicitly represent <em>game objects</em> in the code
+<ul>
+<li><strong>Game Object</strong> $\approx$ any entity that may appear in the game world (e.g. the circle)
+<ul>
+<li>interesting aspects: <em>size</em>, <em>position</em> , <em>speed</em>, <em>name</em>, etc.</li>
+<li>may have methods to <em>update</em> its state</li>
+</ul>
+</li>
+<li>the <em>overall</em> <strong>game state</strong> consists of <em>all</em> game objects therein contained
+<ul>
+<li>$\Rightarrow$ update the game $\equiv$ update <em>each</em> game objects</li>
+</ul>
+</li>
+<li>cf. <a href="https://www.pygame.org/docs/">PyGame documentation</a></li>
+</ul>
+</li>
+</ol>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col col-9" style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">pygame.math</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">Vector2</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">pygame.rect</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">Rect</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">GameObject</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">size</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">position</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">speed</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">name</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">size</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">position</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">position</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#204a87;font-weight:bold">None</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">speed</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">speed</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#204a87;font-weight:bold">None</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">name</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__class__</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__name__</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">lower</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__eq__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">other</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#204a87">isinstance</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">other</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87">type</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#204a87;font-weight:bold">and</span> \
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">other</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span> <span style="color:#204a87;font-weight:bold">and</span> \
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">other</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span> <span style="color:#204a87;font-weight:bold">and</span> \
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">other</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#204a87;font-weight:bold">and</span> \
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">other</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__hash__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#204a87">hash</span><span style="color:#000;font-weight:bold">((</span><span style="color:#204a87">type</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span><span style="color:#000;font-weight:bold">))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__repr__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#4e9a06">f</span><span style="color:#4e9a06">'&lt;</span><span style="color:#4e9a06">{</span><span style="color:#204a87">type</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">)</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__name__</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">(id=</span><span style="color:#4e9a06">{</span><span style="color:#204a87">id</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">)</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">, name=</span><span style="color:#4e9a06">{</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">, size=</span><span style="color:#4e9a06">{</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">, position=</span><span style="color:#4e9a06">{</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">, speed=</span><span style="color:#4e9a06">{</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">)&gt;'</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__str__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#4e9a06">f</span><span style="color:#4e9a06">'</span><span style="color:#4e9a06">{</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">#</span><span style="color:#4e9a06">{</span><span style="color:#204a87">id</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">)</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">'</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#5c35cc;font-weight:bold">@property</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">bounding_box</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">Rect</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#ce5c00;font-weight:bold">-</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">update</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">dt</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#ce5c00;font-weight:bold">+</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span> <span style="color:#ce5c00;font-weight:bold">*</span> <span style="color:#000">dt</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">__name__</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#4e9a06">'__main__'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">GameObject</span><span style="color:#000;font-weight:bold">((</span><span style="color:#0000cf;font-weight:bold">10</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">20</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">100</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">200</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#4e9a06">'myobj'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">10</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">20</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">100</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">200</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#4e9a06">'myobj'</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bounding_box</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">topleft</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">95</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">190</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bounding_box</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">10</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">20</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bounding_box</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bottomright</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">105</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">210</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#204a87">str</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">x</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#4e9a06">'myobj#'</span> <span style="color:#ce5c00;font-weight:bold">+</span> <span style="color:#204a87">str</span><span style="color:#000;font-weight:bold">(</span><span style="color:#204a87">id</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">x</span><span style="color:#000;font-weight:bold">))</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#204a87">repr</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">x</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'&lt;GameObject(id=</span><span style="color:#4e9a06">%d</span><span style="color:#4e9a06">, name=myobj, size=[10, 20], position=[100, 200], speed=[1, 2])&gt;'</span> <span style="color:#ce5c00;font-weight:bold">%</span> <span style="color:#204a87">id</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">x</span><span style="color:#000;font-weight:bold">))</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#000">y</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">GameObject</span><span style="color:#000;font-weight:bold">((</span><span style="color:#0000cf;font-weight:bold">10</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">20</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">100</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">200</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#4e9a06">'myobj'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">z</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">GameObject</span><span style="color:#000;font-weight:bold">((</span><span style="color:#0000cf;font-weight:bold">10</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">20</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">100</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">200</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#4e9a06">'myobj2'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">y</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#000">z</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">update</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">position</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">102</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">204</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#000">y</span>
+</span></span></code></pre></div></div>
+<div class="col " style="text-align: left;"><figure id="plantuml-figure-1729866388816289827" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<p>class GameObject {
++ name: str
++ position: Vector2
++ size: Vector2
++ speed: Vector2
++ bounding_box: Rect
++ update(dt: float)
+}</p>
+<p>package “pygame” {
+class Vector2 {
++ x: float
++ y: float
+}
+class Rect {
++ left: float
++ top: float
++ width: float
++ height: float
+}
+}</p>
+<p>GameObject *-d- Vector2
+GameObject *– Rect</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388816289827");
+</script>
+</div>
+</div>
+</div>
+<p>full example <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab1/example2_game_object.py">on GitHub</a></p>
+</section><section>
+<h2 id="clean-code-recommendations-1">Clean Code Recommendations</h2>
+<ol start="2">
+<li>Better to explicitly represent <em>input handlers</em> and <em>controllers</em> in the code
+<ul>
+<li><strong>Input Handler</strong> $\approx$ any entity that may <em>interpret</em> user inputs and map them to <em>game events</em>
+<ul>
+<li>supports plugging in different <em>key maps</em></li>
+</ul>
+</li>
+<li><strong>Game Events</strong> $\approx$ represent <em>actions</em> that make sense for game objects
+<ul>
+<li>e.g., <code>MOVE_UP</code>, <code>MOVE_DOWN</code>, <code>STOP</code>, etc.</li>
+<li>custom event <em>types</em> can be defined via <a href="https://www.pygame.org/docs/ref/event.html#pygame.event.custom_type"><code>pygame.event.custom_type()</code></a></li>
+</ul>
+</li>
+<li><strong>Controller</strong> $\approx$ any entity that may <em>interpret</em> game events and <em>update</em> the game state accordingly</li>
+</ul>
+</li>
+</ol>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col col-9" style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">pygame</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">pygame.event</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">Event</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">custom_type</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">enum</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">Enum</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">GameEvent</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">Enum</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">MOVE_UP</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">int</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">custom_type</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">MOVE_DOWN</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">int</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">custom_type</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">MOVE_LEFT</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">int</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">custom_type</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">MOVE_RIGHT</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">int</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">custom_type</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">STOP</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">int</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">QUIT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">create_event</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#ce5c00;font-weight:bold">**</span><span style="color:#000">kwargs</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">Event</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">value</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">kwargs</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#5c35cc;font-weight:bold">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">all</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">cls</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#204a87">set</span><span style="color:#000;font-weight:bold">[</span><span style="color:#4e9a06">'GameEvent'</span><span style="color:#000;font-weight:bold">]:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#204a87">set</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">cls</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__members__</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">values</span><span style="color:#000;font-weight:bold">())</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#5c35cc;font-weight:bold">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">types</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">cls</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#204a87">list</span><span style="color:#000;font-weight:bold">[</span><span style="color:#204a87">int</span><span style="color:#000;font-weight:bold">]:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">[</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">value</span> <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">event</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#3465a4">cls</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">all</span><span style="color:#000;font-weight:bold">()]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">KEYMAP_WASD</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_w</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_UP</span><span style="color:#000;font-weight:bold">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_s</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_DOWN</span><span style="color:#000;font-weight:bold">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_d</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_RIGHT</span><span style="color:#000;font-weight:bold">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_a</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_LEFT</span><span style="color:#000;font-weight:bold">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">K_ESCAPE</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">STOP</span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">InputHandler</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">keymap</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">keymap</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">dict</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">keymap</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">keymap</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#204a87;font-weight:bold">None</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#000">KEYMAP_WASD</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">handle_inputs</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">event</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">get</span><span style="color:#000;font-weight:bold">([</span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYDOWN</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYUP</span><span style="color:#000;font-weight:bold">]):</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">key</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">keymap</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">keys</span><span style="color:#000;font-weight:bold">():</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">game_event</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">keymap</span><span style="color:#000;font-weight:bold">[</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">key</span><span style="color:#000;font-weight:bold">]</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">create_event</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">up</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">type</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">KEYUP</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">post_event</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">game_event</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">post_event</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">game_event</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">post</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">game_event</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">Controller</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">InputHandler</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">game_object</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">speed</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">keymap</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">super</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">keymap</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_game_object</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">game_object</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_speed</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">speed</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">update</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">dt</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">event</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">get</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">types</span><span style="color:#000;font-weight:bold">()):</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_update_object_according_to_event</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_game_object</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">event</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_game_object</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">update</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">dt</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">_update_object_according_to_event</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">game_object</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">event</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">match</span> <span style="color:#000">GameEvent</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">type</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_UP</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">game_object</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">y</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">up</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#ce5c00;font-weight:bold">-</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_speed</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_DOWN</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">game_object</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">y</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">up</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_speed</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_LEFT</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">game_object</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">up</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#ce5c00;font-weight:bold">-</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_speed</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">MOVE_RIGHT</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">game_object</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">speed</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">x</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span> <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">event</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">up</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_speed</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#000">GameEvent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">STOP</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">quit</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">exit</span><span style="color:#000;font-weight:bold">()</span>
+</span></span></code></pre></div></div>
+<div class="col " style="text-align: left;"><figure id="plantuml-figure-1729866388831222273" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<p>top to bottom direction</p>
+<p>enum GameEvent {
++ MOVE_UP
++ MOVE_DOWN
++ MOVE_LEFT
++ MOVE_RIGHT
++ STOP
++ create_event(**kwargs): Event
++ {static} all(): set[GameEvent]
++ {static} types(): list[int]
+}</p>
+<p>package “pygame” {
+package “event” {
+class Event {
++ type: int
++ data: dict
+}
+}
+}</p>
+<p>class InputHandler {
++ keymap: Dict[int, int]
++ handle_inputs() -&gt; List[int]
++ post_event(event: Event)
+}</p>
+<p>class Controller {
+- _game_object: GameObject
+- _speed: float
++ update(dt: float)
+- _update_object_according_to_event(game_object, event)
+}</p>
+<p>InputHandler &lt;|-d- Controller</p>
+<p>InputHandler .u.&gt; GameEvent: uses
+InputHandler .u.&gt; Event: uses</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388831222273");
+</script>
+</div>
+</div>
+</div>
+<p>full example <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab1/example3_controller.py">on GitHub</a></p>
+</section><section>
+<h2 id="clean-code-recommendations-2">Clean Code Recommendations</h2>
+<ol start="3">
+<li>Better to delegate <em>rendering</em> to a dedicated class taking care of the <em>view</em> of the game
+<ul>
+<li><strong>View</strong> $\approx$ any entity that may <em>draw</em> game objects on the screen
+<ul>
+<li>may have methods to <em>render</em> the game (objects) on the screen</li>
+</ul>
+</li>
+<li>cf. <a href="https://www.pygame.org/docs/ref/display.html">PyGame documentation</a></li>
+</ul>
+</li>
+</ol>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col col-9" style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">pygame</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">View</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">game_object</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">screen</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">size</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">background_color</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">foreground_color</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">screen</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">size</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">screen</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">get_size</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_size</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">size</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">800</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">600</span><span style="color:#000;font-weight:bold">)</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">background_color</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Color</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">background_color</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#4e9a06">"black"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">foreground_color</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Color</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">foreground_color</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#4e9a06">"white"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_screen</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">screen</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">set_mode</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_size</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">game_object</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">"game_object cannot be None"</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_game_object</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">game_object</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">render</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_reset_screen</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_screen</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">background_color</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_draw_game_object</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_game_object</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">foreground_color</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">flip</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">_reset_screen</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">screen</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">color</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">screen</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">fill</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">color</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">_draw_game_object</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">game_object</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">color</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">draw</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">ellipse</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_screen</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">color</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">game_object</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bounding_box</span><span style="color:#000;font-weight:bold">)</span>    
+</span></span><span style="display:flex;"><span>        
+</span></span></code></pre></div></div>
+<div class="col " style="text-align: left;"><figure id="plantuml-figure-1729866388834404575" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<p>top to bottom direction</p>
+<p>class View {
+- _size: tuple[int, int]
+- _screen: Surface
++ background_color: Color
++ foreground_color: Color
+- _game_object: GameObject
++ render()
+- _reset_screen(screen, color)
+- _draw_game_object(game_object, color)
+}</p>
+<p>package “pygame” {
+class Surface {
++ fill(color: Color)
++ flip()
+}
+class Color {
++ r: int
++ g: int
++ b: int
++ a: int
+}
+}</p>
+<p>View .d.&gt; Surface: uses
+View ..&gt; Color: uses</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388834404575");
+</script>
+</div>
+</div>
+</div>
+<p>full example <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab1/example4_view.py">on GitHub</a></p>
+</section><section>
+<h2 id="clean-code-recommendations-3">Clean Code Recommendations</h2>
+<ol start="4">
+<li>Wrap up
+<ul>
+<li>game loop is now much simplified</li>
+<li>changes in <em>input handling</em> $\rightarrow$ implement new <code>InputHandler</code></li>
+<li>changes in <em>game logic</em> $\rightarrow$ implement new <code>Controller</code></li>
+<li>changes in <em>visualization</em> $\rightarrow$ implement new <code>View</code></li>
+</ul>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">pygame</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">.example2_game_object</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">GameObject</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">.example3_controller</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">Controller</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">.example4_view</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">View</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Initialize Pygame</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">init</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Screen dimensions</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">screen_size</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Vector2</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">800</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">600</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">screen</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">set_mode</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">screen_size</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">set_caption</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"Game Loop Example"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Game objects</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">circle</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">GameObject</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">size</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">screen_size</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">10</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">position</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">screen_size</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">name</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#4e9a06">"circle"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Wire game-loop components together</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">controller</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Controller</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">game_object</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">circle</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">speed</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87">min</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">screen_size</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">10</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">view</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">View</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">game_object</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">circle</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">screen</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">screen</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">clock</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">time</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Clock</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Main game loop</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span> <span style="color:#8f5902;font-style:italic"># time elapsed since last loop iteration</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">running</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">True</span> <span style="color:#8f5902;font-style:italic"># game should stop when set to False</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#000">running</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">controller</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">handle_inputs</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">controller</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">update</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">dt</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">view</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">render</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Ensure the game runs at 60 FPS</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">clock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">tick</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">60</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">1000</span>  <span style="color:#8f5902;font-style:italic"># Time elapsed since last loop iteration in seconds</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Quit Pygame</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">quit</span><span style="color:#000;font-weight:bold">()</span>
+</span></span></code></pre></div><p>full example <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab1/example5_game_loop_cleancode.py">on GitHub</a></p>
+
+</section>
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="model">
+<h1 id="pong-model">Pong Model</h1>
+</section><section>
+<h2 id="lets-infer-a-model-from-the-view-pt-1">Let’s infer a model from the view (pt. 1)</h2>
+<p><img src="dpongpy4.png" alt="Pong view for 4 players"></p>
+<ul>
+<li>up to 4 <em>paddles</em> for as many <strong>players</strong></li>
+<li>a <em>ball</em> that <em>bounces off</em> the paddles and the <em>walls</em></li>
+</ul>
+</section><section>
+<h2 id="lets-infer-a-model-from-the-view-pt-2">Let’s infer a model from the view (pt. 2)</h2>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><p><img src="./model.svg" alt="Detail on the visible and invisible aspects of the Pong model"></p>
+</div>
+<div class="col " style="text-align: left;"><br>
+<p><code>Pong</code> game model comprehends:</p>
+<ol>
+<li>
+<p><code>GameObject</code>: <em>visible</em> entity in the game</p>
+<ul>
+<li>relevant properties: <code>name</code>, <code>position</code>, <code>size</code>, *<code>speed</code>*, <code>bounding_box</code>
+<ul>
+<li><code>position</code>, <code>size</code>, and *<code>speed</code>* are <code>Vector2</code> instances</li>
+</ul>
+</li>
+<li>particular cases: <code>Paddle</code>, <code>Ball</code>
+<ul>
+<li><code>Paddle</code> instances are assigned to one <code>side</code> (<em>property</em>) of the screen
+<ul>
+<li>4 possible <em>sides</em> for as many <code>Direction</code>s: <code>UP</code>, <code>DOWN</code>, <code>LEFT</code>, <code>RIGHT</code></li>
+<li>each paddle corresponds to a different <em>player</em>
+<ul>
+<li>to support <em>local</em> <strong>multiplayer</strong>, different <em>key bindings</em> are needed</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>Board</code>: the plane upon which the game is played (black <em>rectangle</em> in the figure)</p>
+<ul>
+<li>relevant properties: <code>size</code>, <code>walls</code></li>
+<li><code>Wall</code>: <em>invisible</em> entity that <em>reflects</em> the <code>Ball</code> when hit</li>
+</ul>
+</li>
+<li>
+<p>Ancillary classes: <code>Vector2</code>, <code>Rectangle</code>, <code>Direction</code></p>
+<ul>
+<li><code>Vector2</code> <em>utility</em> class from PyGame, representing a <em>2D vector</em></li>
+<li><code>Rectangle</code> <em>utility</em> class, representing a <em>rectangle</em>, supporting <strong>collision detection</strong></li>
+<li><code>Direction</code> is an <em>enumeration</em> of 4 possible directions + <code>NONE</code> (lack of direction)</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</section><section>
+<h2 id="lets-infer-a-model-from-the-view-pt-3">Let’s infer a model from the view (pt. 3)</h2>
+<figure id="plantuml-figure-1729866388846407789" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<p>left to right direction</p>
+<p>package “dpongpy.model” {</p>
+<pre><code>enum Direction {
+    + {static} NONE
+    + {static} LEFT
+    + {static} UP
+    + {static} RIGHT
+    + {static} DOWN
+    --
+    + is_vertical: bool
+    + is_horizontal: bool
+    + {static} values(): list[Direction]
+}
+
+interface Sized {
+    +size: Vector2
+    +width: float
+    +height: float
+}
+
+interface Positioned {
+    +position: Vector2
+    +x: float
+    +y: float
+}
+
+class Rectangle {
+    + top_left: Vector2
+    + top_right: Vector2
+    + bottom_right: Vector2
+    + bottom_left: Vector2
+    + top: float
+    + bottom: float
+    + left: float
+    + right: float
+    + corners -&gt; list[Vector2]
+    + overlaps(other: Rectangle) -&gt; bool
+    + is_inside(other: Rectangle) -&gt; bool
+    + intersection_with(other: Rectangle) -&gt; Rectangle
+    + hits(other: Rectangle) -&gt; dict[Direction, float]
+}
+
+Rectangle --|&gt; Sized
+Rectangle --|&gt; Positioned
+
+class GameObject {
+    + name: str
+    + speed: Vector2
+    + bounding_box: Rectangle
+    + update(dt: float)
+    + override(other: GameObject)
+}
+
+GameObject --|&gt; Sized
+GameObject --|&gt; Positioned
+GameObject "1" *-- "1" Rectangle
+
+class Paddle {
+    + side: Direction
+}
+
+Paddle --|&gt; GameObject
+Paddle "1" *-- "1" Direction
+
+class Ball
+Ball --|&gt; GameObject
+
+class Board {
+    + walls: dict[Direction, GameObject]
+}
+
+Board --|&gt; Sized
+Board "1" *-- "4" Direction
+Board "1" *-- "4" GameObject
+
+class Pong {
+    + config: Config
+    + random: Random
+    + ball: Ball
+    + paddles: list[Paddle]
+    + board: Board
+    + updates: int
+    + time: float
+    --
+    + reset_ball(speed: Vector2 = None)
+    + add_paddle(side: Direction, paddle: Paddle = None)
+    + paddle(side: Direction): Paddle
+    + has_paddle(side: Direction): bool
+    + remove_paddle(self, Direction)
+    --
+    + update(dt: float)
+    + move_paddle(paddle: int|Direction, direction: Direction)
+    + stop_paddle(paddle: int|Direction):
+    + override(self, other: Pong):
+    - _handle_collisions(subject, objects)
+}
+
+'Pong --|&gt; Sized
+Pong "1" *-- "1" Ball
+Pong "1" *-- "4" Paddle
+Pong "1" *-- "1" Board
+Pong "1" *-- "1" Config
+
+note top of Pong
+    model class
+end note
+
+class Config {
+    + paddle_ratio: Vector2
+    + ball_ratio: float
+    + ball_speed_ratio: float
+    + paddle_speed_ratio: float
+    + paddle_padding: float
+}
+</code></pre>
+<p>}</p>
+<p>package “random” {
+class Random {
++ uniform(a: float, b: float): float
+}
+}</p>
+<p>package “pygame” {
+class Vector2 {
++x: float
++y: float
+}
+}</p>
+<p>Rectangle “1” *-l- “6” Vector2
+Pong “1” *– “1” Random</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388846407789");
+</script>
+<p>code <a href="https://github.com/unibo-fc-isi-ds/dpongpy/blob/master/dpongpy/model.py">on GitHub</a></p>
+</section><section>
+<h2 id="lets-infer-a-model-from-the-view-pt-4">Let’s infer a model from the view (pt. 4)</h2>
+<p>Facilities of the <code>Pong</code> class, to <strong>configure</strong> the game:</p>
+<ul>
+<li><code>reset_ball(speed=None)</code>: <em>re-locates</em> the <code>Ball</code> at the <em>center</em> of the <code>Board</code>, setting its <code>speed</code> <em>vector</em> to the given value
+<ul>
+<li><em>random</em> speed <em>direction</em> is provided if <code>speed</code> is <code>None</code></li>
+</ul>
+</li>
+<li><code>add_paddle(side, paddle=None)</code>: <em>assigns</em> a <code>Paddle</code> to the <code>Pong</code>, at the given <code>side</code> (if not already present)
+<ul>
+<li>the <code>Paddle</code> is created from scratch if <code>paddle</code> is <code>None</code>
+<ul>
+<li>in this case, the paddle is <em>centered</em> on the <code>side</code> of the <code>Board</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>paddle(side)</code>: <em>retrieves</em> the <code>Paddle</code> at the given <code>side</code></li>
+<li><code>has_paddle(side)</code>: <em>checks</em> if a <code>Paddle</code> is present at the given <code>side</code></li>
+<li><code>remove_paddle(side)</code>: <em>removes</em> the <code>Paddle</code> at the given <code>side</code></li>
+</ul>
+<p>Facilities of the <code>Pong</code> class, to <strong>animate</strong> the game:</p>
+<ul>
+<li><code>update(dt)</code>: <em>updates</em> the game state, <em>moving</em> the <code>Ball</code> and the <code>Paddles</code> according to the given time <em>delta</em>
+<ul>
+<li>computes <em>collisions</em> between the <code>Ball</code> and the <code>Paddles</code> and the <code>Walls</code>
+<ul>
+<li>uses <code>_handle_collisions</code> method to the purpose</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>move_paddle(side, direction)</code>: <em>moves</em> the selected <code>Paddle</code> in the given <code>direction</code> by setting its <code>speed</code> <em>vector</em> accordingly
+<ul>
+<li><code>paddle</code> can either be an <code>int</code> (index of the <code>Paddle</code> in the <code>paddles</code> list) or a <code>Direction</code> (side of the <code>Paddle</code>)</li>
+<li><em>left</em> and <em>right</em> paddles can only move <em>up</em> and <em>down</em>, respectively</li>
+<li><em>up</em> and <em>down</em> paddles can only move <em>left</em> and <em>right</em>, respectively</li>
+</ul>
+</li>
+<li><code>stop_paddle(side)</code>: <em>stops</em> the selected <code>Paddle</code> from moving</li>
+</ul>
+</section><section>
+<h2 id="about-collisions">About collisions</h2>
+<ul>
+<li>
+<p><em>Collision detection</em> is a crucial aspect of game development</p>
+<ul>
+<li>it is the process of <em>determining</em> when two or more game objects <em>overlap</em></li>
+<li>it is the basis for <em>physics simulation</em> in games</li>
+</ul>
+</li>
+<li>
+<p>In <code>Pong</code> collisions are very <em>simple</em>, as they simply rely on the game objects’ <strong>bounding boxes</strong></p>
+<ul>
+<li>a <em>bounding box</em> the <strong>minimal</strong> <em>rectangle</em> that <em>encloses</em> the game object</li>
+<li>a collision is detected when two bounding boxes <em>overlap</em></li>
+</ul>
+</li>
+<li>
+<p>In <code>Pong</code> there are 3 sorts of relevant collisions:</p>
+<ol>
+<li><code>Ball</code> vs. <code>Paddle</code></li>
+<li><code>Ball</code> vs. <code>Wall</code></li>
+<li><code>Paddle</code> vs. <code>Wall</code></li>
+</ol>
+</li>
+<li>
+<p><strong>Bouncing</strong> can simply be achieved by <em>reversing</em> the <code>Ball</code>’s speed <em>vector</em> along the <em>colliding</em> axis</p>
+</li>
+</ul>
+</section><section>
+<h2 id="collision-detection-in-gameobjects-non-overlapping">Collision detection in <code>GameObject</code>s (non overlapping)</h2>
+<p><img src="./collision-1.svg" alt=""></p>
+</section><section>
+<h2 id="collision-detection-in-gameobjects-overlapping">Collision detection in <code>GameObject</code>s (overlapping)</h2>
+<p><img src="./collision-2.svg" alt=""></p>
+</section><section>
+<h2 id="collision-detection-in-gameobjects-inside">Collision detection in <code>GameObject</code>s (inside)</h2>
+<p><img src="./collision-3.svg" alt=""></p>
+</section><section>
+<h2 id="bouncing">Bouncing</h2>
+<ol>
+<li>Suppose the <code>Ball</code> is close to an obstacle and <code>update()</code> is called</li>
+</ol>
+<p><img src="./bouncing-1.svg" alt=""></p>
+</section><section>
+<h2 id="bouncing-1">Bouncing</h2>
+<ol start="2">
+<li>When the position of the <code>Ball</code> is updated, it is now <em>overlapping</em> an obstacle (wall, or paddle)</li>
+</ol>
+<p><img src="./bouncing-2.svg" alt=""></p>
+</section><section>
+<h2 id="bouncing-2">Bouncing</h2>
+<ol start="3">
+<li><code>Bouncing</code> = <em>reversing</em> the speed vector along the <em>colliding</em> axis + re-locating the <code>Ball</code> outside the obstacle</li>
+</ol>
+<p><img src="./bouncing-3.svg" alt=""></p>
+</section><section>
+<h2 id="bouncing-3">Bouncing</h2>
+<ol start="3">
+<li>Another <code>update()</code> call will <em>move</em> the <code>Ball</code> <em>away</em> from the obstacle</li>
+</ol>
+<p><img src="./bouncing-4.svg" alt=""></p>
+
+</section>
+<!-- Maybe discuss sizing? -->
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="io">
+<h1 id="pong-io">Pong I/O</h1>
+</section><section>
+<h2 id="about-inputs">About Inputs</h2>
+<blockquote>
+<p><strong>Insight</strong>: <em>inputs</em> are <em>external</em> <strong>data</strong>, representing <em>events</em> that may impact the system state
+<br> (most <em>commonly</em> corresponding to users’ <em>actions</em>)
+<br> (exceptions apply)</p>
+</blockquote>
+<br>
+<p>In a simple video game like Pong, we distinguish between:</p>
+<ul>
+<li><strong>control events</strong>: corresponding to some <em>update</em> in the <em>game state</em></li>
+<li><strong>input events</strong>: <em>low-level</em> events which require some <em>processing</em> to be translated into <em>control events</em></li>
+</ul>
+</section><section>
+<h2 id="input-handling-and-control-events-pt-1">Input handling and Control Events (pt. 1)</h2>
+<h3 id="design-questions">Design questions</h3>
+<ol>
+<li>
+<p>What <strong>input events</strong> are <em>relevant</em> for the software, during its execution?</p>
+<ul>
+<li><em>keyboard</em> inputs, in particular <strong>pressures</strong> and <strong>releases</strong> of <em>keys</em>
+<ul>
+<li>pressure should provoke a <code>Paddle</code>’s <em>movement</em></li>
+<li>release should provoke a <code>Paddle</code>’s <em>stop</em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>What other <strong>control events</strong> are <em>relevant</em> for the software, during its execution?</p>
+<ul>
+<li><strong>player</strong> <em>joining</em> or <em>leaving</em> the game (mostly useful in <em>distributed</em> setting)</li>
+<li><strong>game</strong> <em>starting</em> or <em>ending</em> (mostly useful in <em>distributed</em> setting)</li>
+<li><strong>time</strong> <em>passing</em> in the game</li>
+<li><strong>paddle</strong> <em>moving</em> or <em>stopping</em></li>
+</ul>
+</li>
+</ol>
+<span class="fragment ">
+  <h3 id="design-choices">Design choices</h3>
+<ul>
+<li>We introduce two <em>abstractions</em> to <em>handle</em> inputs and control events:
+<ul>
+<li><code>InputHandler</code> <em>interprets</em> keyboard <strong>input</strong> events and <em>generates</em> <strong>control events</strong></li>
+<li><code>EventHandler</code> <em>processes</em> <strong>control events</strong> and <em>updates</em> the game <em>state</em> (<code>Pong</code> class) accordingly</li>
+</ul>
+</li>
+</ul>
+</span>
+</section><section>
+<h2 id="input-handling-and-control-events-pt-2">Input handling and Control Events (pt. 2)</h2>
+<h3 id="important-remark">Important Remark</h3>
+<ul>
+<li>Notice the <strong>time passing</strong> event corresponds to <em>no user input</em></li>
+<li>This <em>complicates</em> the design
+<ul>
+<li><em>conceptually</em>, it implies that the system <strong>evolves</strong> even in absence of user inputs</li>
+<li><em>practically</em>, it implies that the system must be able to <strong>generate</strong> control events <em>internally</em></li>
+</ul>
+</li>
+<li>At the <em>modelling</em> level, this means one more <em>abstraction</em> is needed
+<ul>
+<li>the <strong>control loop</strong> is actually the abstraction that takes care of <em>time passing</em> in the game</li>
+</ul>
+</li>
+</ul>
+<span class="fragment ">
+  <h3 id="more-design-choices">More design choices</h3>
+<ul>
+<li>To keep our design proposal <em>simple</em>, we:
+<ul>
+<li>consider the <em>time passing</em> event as a <em>special</em> kind of <strong>input</strong>…</li>
+<li>… not really provided by the user, but by the <em>control</em> itself</li>
+<li>so, the <code>InputHandler</code> is also in charge of <em>generating</em> <strong>time passing</strong> events</li>
+</ul>
+</li>
+</ul>
+</span>
+</section><section>
+<h2 id="input-handling-and-control-events-pt-3">Input handling and Control Events (pt. 3)</h2>
+<h3 id="important-remark-1">Important Remark</h3>
+<ul>
+<li>In the general case, <code>Paddle</code>s are moved by players, via the <em>keyboard</em>
+<ul>
+<li>
+<p>when players are <strong>distributed</strong>, the <em>keyboards</em> are <strong>different</strong></p>
+<ul>
+<li>so <strong>key bindings</strong> <em>can</em> be the <em>same</em> for all players (but still <em>customisable</em>)</li>
+</ul>
+</li>
+<li>
+<p>when players are <strong>local</strong>, there’s only <strong>one</strong> keyboard</p>
+<ul>
+<li>so <strong>key bindings</strong> <em>must</em> be <em>different</em> for each player</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<span class="fragment ">
+  <h3 id="more-design-choices">More design choices</h3>
+<ul>
+<li>Useful additional <em>abstractions</em>:
+<ul>
+<li><code>PlayerAction</code> <em>enumerates</em> all possible <em>actions</em> a player can perform (on a paddle)
+<ul>
+<li>e.g. <strong>move</strong> <em>paddle</em> in a given <code>Direction</code>, <strong>stop</strong> <em>paddle</em>, <strong>quit</strong> the game</li>
+</ul>
+</li>
+<li><code>ActionMap</code>, associating <em>key codes</em> to <code>PlayerAction</code>s</li>
+</ul>
+</li>
+</ul>
+</span>
+</section><section>
+<h2 id="design-proposal-pt-1">Design Proposal (pt. 1)</h2>
+<figure id="plantuml-figure-1729866388847479684" class="plantuml" alt="" style="width: 85%;max-width: 95vw;max-height: 80vh;">
+<p>left to right direction</p>
+<p>package “pygame.event” {
+class Event {
++ type: int
++ dict: dict
+}
+}</p>
+<p>package “dpongpy.controller” {
+class ActionMap {
++ move_up: int
++ move_down: int
++ move_left: int
++ move_right: int
++ quit: int
++ name: str
+}</p>
+<pre><code>enum PlayerAction {
+    + {static} MOVE_UP
+    + {static} MOVE_DOWN
+    + {static} MOVE_RIGHT
+    + {static} MOVE_LEFT
+    + {static} STOP
+    + {static} QUIT
+}
+
+enum ControlEvent {
+    + {static} PLAYER_JOIN
+    + {static} PLAYER_LEAVE
+    + {static} GAME_START
+    + {static} GAME_OVER
+    + {static} PADDLE_MOVE
+    + {static} TIME_ELAPSED
+}
+
+interface InputHandler {
+    + create_event(event, **kwargs)
+    + post_event(event, **kwargs)
+    ..
+    + key_pressed(key: int)
+    + key_released(key: int)
+    + time_elapsed(dt: float)
+    ..
+    + handle_inputs(dt: float)
+}
+
+interface EventHandler {
+    + handle_events()
+    ..
+    + on_player_join(pong: Pong, paddle):
+    + on_player_leave(pong: Pong, paddle):
+    + on_game_start(pong: Pong):
+    + on_game_over(pong: Pong):
+    + on_paddle_move(pong: Pong, paddle, direction):
+    + on_time_elapsed(pong: Pong, dt):
+}
+</code></pre>
+<p>}</p>
+<p>package “dpongpy.model” {
+class Pong {
+stuff
+}
+}</p>
+<p>ActionMap &lt;.. InputHandler: processes
+Event &lt;.. InputHandler: processes
+InputHandler ..&gt; PlayerAction: selects\nbased on\nActionMap\nand\nEvent
+InputHandler ..&gt; ControlEvent: generates
+PlayerAction &lt;.. ControlEvent: wraps
+ControlEvent &lt;.. EventHandler: processes
+EventHandler ..&gt; Pong: updates\nbased on\nControlEvent</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388847479684");
+</script>
+<ul>
+<li>each <strong>player</strong> is associated to a <code>Paddle</code> and to an <code>ActionMap</code> to <em>govern</em> that <code>Paddle</code></li>
+<li>an <code>ActionMap</code> is a <em>dictionary</em> mapping <em>key codes</em> to <code>PlayerAction</code>s
+<ul>
+<li>e.g. <code>pygame.K_UP</code> $\rightarrow$ <code>MOVE_UP</code>, <code>pygame.K_DOWN</code> $\rightarrow$ <code>MOVE_DOWN</code> for <em>right</em> paddle (arrow keys)</li>
+<li>e.g. <code>pygame.K_w</code> $\rightarrow$ <code>MOVE_UP</code>, <code>pygame.K_s</code> $\rightarrow$ <code>MOVE_DOWN</code> for <em>left</em> paddle (WASD keys)</li>
+</ul>
+</li>
+<li><code>PlayerAction</code>s are one particular <em>sort</em> of <code>ControlEvent</code>s that may occur in the game
+<ul>
+<li>e.g. <code>GAME_START</code>, <code>PADDLE_MOVE</code>, <code>TIME_ELAPSED</code>, etc.</li>
+</ul>
+</li>
+<li><code>ControlEvent</code>s are <em>custom</em> PyGame events which <em>animate</em> the game
+<ul>
+<li>each event instance is <em>parametric</em> (i.e. may carry additional <em>data</em>)
+<ul>
+<li>e.g. <code>PADDLE_MOVE</code> carries the information about <em>which</em> <code>Paddle</code> is moving and <em>where</em> it is moving</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="design-proposal-pt-2">Design proposal (pt. 2)</h2>
+<h3 id="example-of-keyboard-input-processing">Example of Keyboard Input Processing</h3>
+<p><img src="http://www.plantuml.com/plantuml/svg/bPHFRvj04CNlyob6xY79Ag3QlN684jNqZveq79fMbP3GnaoePPYbx68NMVdkNNPhR6nVUh8qy_Otx9ktljL6DgQjIYZfnQ1Hs2oBNmRpPKCBirGC81T6DJX9IjbHWzC9Iet95A0NI2vAmZSTbQNQu6IXs3Igr2X4ZnC2Qvdd9Raph0mXWFi9ci0nQhbOoO9mKdU5h2YaDR49XOZxNo4kKqP4IpDTJK94w6LMy2N-EN_yyLM8wvraHTrOaJqbGgHyvOPF7Db-_1RX5U1tIosXcwBxTZmzBStWugJs3Y2POX3SeEUX7TYGrgJnAKaPdrjZ58DlzZfBZZ3fFigAaDZnTCh_-kkbJFdevhNIvZ8CmoiX01QggXNR1dxckZMV95ip6u3OiKV527FoUFJqb2qUZ-W53V2zztTkqG-o7kokr9gojZxZv_L8agiD7ub6Mx6ZXWL8DoMhP9sfbyodAHiMSdWL3Ce0pyiZNB7QwFt7l_U9Sol2BI0Y_c-c1eIN9NVp-NsSFJn-ZuK8rx9iQRXqBetiZsnzmHSlVCQp9UVqvw9lptUFn-Bkum_Vh1-Z0yFZEb7t5dlfwpYvCsUKQvopwsPqYmWBOcga8GqZWy8sj8cSHRievlZSfNm8EyoSExFFt0o3rWxorVEXcm7q5ZrBJPWeBX3WK6u1Rwy2rucm3z3-Zo9bxw9zHd1BdBTL-HS0" alt=""></p>
+</section><section>
+<h2 id="design-proposal-pt-3">Design proposal (pt. 3)</h2>
+<h3 id="example-of-time-elapsed-processing">Example of Time Elapsed Processing</h3>
+<p><img src="http://www.plantuml.com/plantuml/svg/PLBBRjGy5DwVf_Wq_wAjrOp-THPLKMSGI4NC0bX5gZpnQHhgiODzCZ0QzIruBfu9so4Yg9jSlildS_5j51raF5Yo_2WGZz1tJmBJ1swbzuwezKw2jxYpldqcohXsdMNyTs9h_NUiXbEd3xoMFZsAQWKTuRmmYCgh2jLh_-hNJsdSPRQ1hHuYcyR5thKCgwFWCQJKgv9bXAZuKLKtwGyrMdyOHk58bB-yOoTuxnBqJZjZEH0PAUebM6Fknde_D6xGCN94AWJYYGRTFkkESJU9jiSSUYO0cAcvMSxSMgcYKUgoSLcbb9m6LgfUHcJPxircSxzz-F3norQfzL7RaQzdYz6Yi-Ky0HDuCMXZB3_qpl2FYqnlvfMakFljsqzANVzZC3F_IlrvfzGaVMdSDD1LgN-5CwZWz4BqRUIHKIgEHCkneR9faCkMQdJiEEYyW2MEzRY--PDHWrt9DDYV6hSCN2ujY__YanNLc0vSCZKCbx08pZ1H7jjUHyREkmv4ItNo_tzL5QR6mH-JIobjhLB8suFVV-LMOkDqs_fW-XGW7lB4VK0xXi2Iz75WDdbo-OQMIqAtxCnuiBy1" alt=""></p>
+</section><section>
+<h2 id="design-proposal-pt-4">Design proposal (pt. 4)</h2>
+<figure id="plantuml-figure-1729866388847508888" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<p>package “dpongpy.controller” {
+interface EventHandler
+interface InputHandler
+interface Controller {
+- _pong: Pong
+}</p>
+<p>EventHandler &lt;|-d- Controller
+InputHandler &lt;|-d- Controller
+}</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388847508888");
+</script>
+<p>we call <code>Controller</code> any entity which acts as both an <code>EventHandler</code> and an <code>InputHandler</code></p>
+</section><section>
+<h2 id="about-outputs">About outputs</h2>
+<blockquote>
+<p><strong>Insight</strong>: outputs are representations of the <em>system state</em>
+<br> that are <em>perceived</em> by the <em>external world</em>
+<br> (most <em>commonly</em> corresponding to <em>visual</em> or <em>auditory</em> <em>feedback</em> for the user)</p>
+</blockquote>
+<p>In our case:</p>
+<ul>
+<li>the output is just a <strong>rendering</strong> of the game <em>state</em> on the screen</li>
+<li>this is possible because we separated <em>model</em>, and <em>control</em>, so now it’s time to separate the <em>view</em>
+<ul>
+<li>essentially, we’re following the <a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC pattern</a></li>
+<li>where <em>model</em> $\approx$ <code>Pong</code>, <em>control</em> $\approx$ <code>EventHandler</code> + <code>InputHandler</code></li>
+</ul>
+</li>
+<li>if the rendering is updated <em>frequently enough</em>, the user <em>perceives</em> the game as <em>animated</em>
+<ul>
+<li>the “frequently enough” is the <em>frame rate</em> of the game (30-60 fps is common)</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="design-proposal">Design Proposal</h2>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col col-5" style="text-align: left;"><figure id="plantuml-figure-1729866388847566004" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<p>@startuml
+package “dpongpy” {
+class Pong</p>
+<p>package “view” {
+interface PongView {
+- _pong: Pong
++ render()
+}</p>
+<p>interface ShowNothingPongView</p>
+<p>note top of ShowNothingPongView
+useful for hiding the game
+end note</p>
+<p>interface ScreenPongView {
+- _screen: Surface
++ render_ball(ball: Ball)
++ render_paddles(paddle: Iterable[Paddle])
++ render_paddle(paddle: Paddle)
+}</p>
+<p>PongView &lt;|-d- ScreenPongView
+PongView &lt;|-d- ShowNothingPongView
+}</p>
+<p>PongView *-u- Pong
+}
+@enduml</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388847566004");
+</script>
+</div>
+<div class="col " style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">pygame</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">dpongpy.model</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#ce5c00;font-weight:bold">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">typing</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">Iterable</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">rect</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">rectangle</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Rectangle</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Rect</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Rect</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">rectangle</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">top_left</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">rectangle</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">PongView</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">pong</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Pong</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_pong</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pong</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">render</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">raise</span> <span style="color:#3465a4">NotImplemented</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">ShowNothingPongView</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">PongView</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">render</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">ScreenPongView</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">PongView</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">pong</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Pong</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">screen</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Surface</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">super</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">pong</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_screen</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">screen</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">set_mode</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">pong</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">render</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_screen</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">fill</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"black"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">render_ball</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_pong</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">ball</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">render_paddles</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_pong</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">paddles</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">render_ball</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">ball</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Ball</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">draw</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">ellipse</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_screen</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">"white"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">rect</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">ball</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bounding_box</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000">width</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">render_paddles</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">paddles</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Iterable</span><span style="color:#000;font-weight:bold">[</span><span style="color:#000">Paddle</span><span style="color:#000;font-weight:bold">]):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">paddle</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">paddles</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">render_paddle</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">paddle</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">render_paddle</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">paddle</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Paddle</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">draw</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">rect</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">_screen</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">"white"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">rect</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">paddle</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bounding_box</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000">width</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div><ul>
+<li>notice the <code>render()</code> method</li>
+</ul>
+</div>
+</div>
+</div>
+
+</section>
+</section>
+
+<section data-noprocess="" data-shortcode-slide="" id="wiring">
+  
+<h1 id="pong">Pong</h1>
+<h2 id="wiring-it-all-together">Wiring it all together</h2>
+
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col col-3" style="text-align: left;"><figure id="plantuml-figure-1729866388860710797" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<p>top to bottom direction
+package “dpongpy” {
+class Settings {
++ config: Config
++ size: tuple[int]
++ fps: int
++ initial_paddles: tuple[Direction]
+}</p>
+<p>class PongGame {
++ settings: Settings
++ pong: Pong
++ dt: float
++ clock: pygame.time.Clock
++ running: bool
++ view: PongView
++ controller: Controller
+..
++ create_view(): PongView
++ create_controller(): Controller
+..
++ before_run()
++ after_run()
++ at_each_run()
+..
++ run()
++ stop()
+}
+Settings -d[hidden]- PongGame
+}</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388860710797");
+</script>
+</div>
+<div class="col " style="text-align: center;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">PongGame</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">settings</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Settings</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">settings</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">settings</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#000">Settings</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">pong</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Pong</span><span style="color:#000;font-weight:bold">(</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">size</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">settings</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">size</span><span style="color:#000;font-weight:bold">,</span> 
+</span></span><span style="display:flex;"><span>            <span style="color:#000">config</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">settings</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">config</span><span style="color:#000;font-weight:bold">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">paddles</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">settings</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">initial_paddles</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">view</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">create_view</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">clock</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">time</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Clock</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">running</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">controller</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">create_controller</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">settings</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">initial_paddles</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">create_view</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">dpongpy.view</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">ScreenPongView</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ScreenPongView</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">pong</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">debug</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">settings</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">debug</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">create_controller</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">game</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">paddle_commands</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">dict</span><span style="color:#000;font-weight:bold">[</span><span style="color:#000">Direction</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">ActionMap</span><span style="color:#000;font-weight:bold">]):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">dpongpy.controller.local</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">PongLocalController</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">Controller</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">PongLocalController</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">paddle_commands</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#204a87">super</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">game</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">pong</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">paddle_commands</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">on_game_over</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">this</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">_</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000">game</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stop</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">Controller</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">paddle_commands</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">before_run</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">init</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">after_run</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">quit</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">at_each_run</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">pygame</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">display</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">flip</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">run</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">try</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">before_run</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">while</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">running</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">controller</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">handle_inputs</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">dt</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">controller</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">handle_events</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">view</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">render</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">at_each_run</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">dt</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">clock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">tick</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">settings</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">fps</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">/</span> <span style="color:#0000cf;font-weight:bold">1000</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">finally</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">after_run</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">stop</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">running</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">main</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">settings</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">settings</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">settings</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Settings</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">PongGame</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">settings</span><span style="color:#000;font-weight:bold">)</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">run</span><span style="color:#000;font-weight:bold">()</span>
+</span></span></code></pre></div><p>notice the implementation of <code>run()</code></p>
+</div>
+</div>
+</div>
+</section>
+
+<section data-noprocess="" data-shortcode-slide="" id="lanunch">
+  
+<h1 id="pong-1">Pong</h1>
+<h2 id="lancing-the-game">Lancing the game</h2>
+<p>See the command line options via <code>poetry run python -m dpongpy -h</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span>pygame 2.6.0 <span style="color:#ce5c00;font-weight:bold">(</span>SDL 2.28.4, Python 3.12.5<span style="color:#ce5c00;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>Hello from the pygame community. https://www.pygame.org/contribute.html
+</span></span><span style="display:flex;"><span>usage: python -m dpongpy <span style="color:#ce5c00;font-weight:bold">[</span>-h<span style="color:#ce5c00;font-weight:bold">]</span> <span style="color:#ce5c00;font-weight:bold">[</span>--mode <span style="color:#ce5c00;font-weight:bold">{</span>local<span style="color:#ce5c00;font-weight:bold">}]</span> <span style="color:#ce5c00;font-weight:bold">[</span>--side <span style="color:#ce5c00;font-weight:bold">{</span>none,left,up,right,down<span style="color:#ce5c00;font-weight:bold">}]</span> <span style="color:#ce5c00;font-weight:bold">[</span>--keys <span style="color:#ce5c00;font-weight:bold">{</span>wasd,arrows,ijkl,numpad<span style="color:#ce5c00;font-weight:bold">}]</span> <span style="color:#ce5c00;font-weight:bold">[</span>--debug<span style="color:#ce5c00;font-weight:bold">]</span> <span style="color:#ce5c00;font-weight:bold">[</span>--size SIZE SIZE<span style="color:#ce5c00;font-weight:bold">]</span> <span style="color:#ce5c00;font-weight:bold">[</span>--fps FPS<span style="color:#ce5c00;font-weight:bold">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>options:
+</span></span><span style="display:flex;"><span>  -h, --help            show this <span style="color:#204a87">help</span> message and <span style="color:#204a87">exit</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mode:
+</span></span><span style="display:flex;"><span>  --mode <span style="color:#ce5c00;font-weight:bold">{</span>local<span style="color:#ce5c00;font-weight:bold">}</span>, -m <span style="color:#ce5c00;font-weight:bold">{</span>local<span style="color:#ce5c00;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>                        Run the game in <span style="color:#204a87">local</span> or centralised mode
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>game:
+</span></span><span style="display:flex;"><span>  --side <span style="color:#ce5c00;font-weight:bold">{</span>none,left,up,right,down<span style="color:#ce5c00;font-weight:bold">}</span>, -s <span style="color:#ce5c00;font-weight:bold">{</span>none,left,up,right,down<span style="color:#ce5c00;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>                        Side to play on
+</span></span><span style="display:flex;"><span>  --keys <span style="color:#ce5c00;font-weight:bold">{</span>wasd,arrows,ijkl,numpad<span style="color:#ce5c00;font-weight:bold">}</span>, -k <span style="color:#ce5c00;font-weight:bold">{</span>wasd,arrows,ijkl,numpad<span style="color:#ce5c00;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>                        Keymaps <span style="color:#204a87;font-weight:bold">for</span> sides
+</span></span><span style="display:flex;"><span>  --debug, -d           Enable debug mode
+</span></span><span style="display:flex;"><span>  --size SIZE SIZE, -S SIZE SIZE
+</span></span><span style="display:flex;"><span>                        Size of the game window
+</span></span><span style="display:flex;"><span>  --fps FPS, -f FPS     Frames per second
+</span></span></code></pre></div><p><a href="https://github.com/unibo-fc-isi-ds/dpongpy">GitHub repository</a></p>
+<ul>
+<li>minimal launch with <code>poetry run python -m dpongpy --mode local</code></li>
+</ul>
+</section><section>
+
+
+<section data-shortcode-section="">
+<h2 id="towards-_distributed_-pong-pt-1">Towards <em>Distributed</em> Pong (pt. 1)</h2>
+<p>(only DS related aspects are discussed here)</p>
+<ol>
+<li><strong>Use case collection</strong>:
+<ul>
+<li><em>where</em> are the users?
+<ul>
+<li>sitting in front of they <em>own</em> computer, connected to the <em>internet</em> or <em>LAN</em></li>
+<li>we <strong>want users to be able to play togther from <em>different</em> locations</strong></li>
+</ul>
+</li>
+<li><em>when</em> and <em>how frequently</em> do they interact with the system?
+<ul>
+<li><em>sporadically</em> they may start a game, but when that happens, <em>interactions</em> among users are <em>very frequent</em></li>
+</ul>
+</li>
+<li><em>how</em> do they <em>interact</em> with the system? which <em>devices</em> are they using?
+<ul>
+<li>pressing <em>keyboard</em> keys on one <em>computer</em> may impact what is <em>displayed</em> on another</li>
+</ul>
+</li>
+<li>does the system need to <em>store</em> user’s <strong>data</strong>? <em>which</em>? <em>where</em>?
+<ul>
+<li><em>no</em> data needs to be stored, but a lot of information needs to be <em>exchanged</em> among users during the game
+<ul>
+<li>this may change if <em>leaderboards</em> are introduced</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>most likely, there will be <em>multiple</em> <strong>roles</strong>
+<ul>
+<li>just <em>players</em></li>
+<li>possibly <em>spectators</em>, i.e. players providing <em>no input</em> but getting the whole <em>visual feedback</em></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="towards-_distributed_-pong-pt-1-1">Towards <em>Distributed</em> Pong (pt. 1)</h2>
+<br>
+<ol start="2">
+<li><strong>Requirements analysis</strong>:
+<ul>
+<li>how to synchronize and coordinate inputs coming from different players?
+<ul>
+<li>possibly, some <em>infrastructural component</em> is needed, behind the scenes, to do this</li>
+</ul>
+</li>
+<li>will the system need to <em>scale</em>?
+<ul>
+<li>not really scale, but it must be able to support players <em>joining</em> and <em>leaving</em> the game at any time</li>
+</ul>
+</li>
+<li>how to handle <em>faults</em>? <em>how</em> will it <em>recover</em>?
+<ul>
+<li>what if a player <em>goes offline</em> during the game?
+<ol>
+<li>e.g. the game <em>pauses</em> until the player <em>reconnects</em></li>
+<li>e.g. the ball position <em>resets</em> to centre and the corresponding paddle is <em>removed</em></li>
+<li>e.g. the corresponding <em>paddle</em> is <em>frozen</em> in place</li>
+</ol>
+</li>
+<li>what if the aforementioned infrastructural component becomes <em>unreachable</em>?
+<ol>
+<li>e.g. the game <em>pauses</em> until the component is <em>reachable</em> again</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><em>acceptance criteria</em> will for all such additional requirements/constraints
+<ul>
+<li><em>latency</em> must be <em>low</em> enough to allow for a <em>smooth</em> game experience
+<ul>
+<li>e.g. avoid <em>lag</em> in the ball/paddle movements</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="towards-_distributed_-pong-pt-1-2">Towards <em>Distributed</em> Pong (pt. 1)</h2>
+<br>
+<ol start="3">
+<li><strong>Design</strong>:
+<ul>
+<li>are there <em>infrastructural components</em> that need to be introduced? <em>how many</em>?</li>
+<li>how do components	<em>distribute</em> over the network? <em>where</em>?</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>In other words, <em>how is the infrastructure of the system organized?</em></p>
+</blockquote>
+<!-- * e.g., one _server_ to coordinate _$N$ clients_ (one for each player) -->
+<!-- * e.g. _centralised_ server on the cloud, _clients_ on all users' computers
+* e.g. _centralised_ server on __one__ user's computer, _clients_ on __all__ other users' computers -->
+</section><section>
+<h2 id="about-the-distributed-pong-_infrastructure_-pt-1">About the Distributed Pong <em>Infrastructure</em> (pt. 1)</h2>
+<h3 id="no-infrastructure-local">No infrastructure (local)</h3>
+<p>Let’s focus on information flow:</p>
+<img src="./local.svg" alt="No infrastructure for Pong" style="max-width: 95vw; max-height: 80vh; object-fit: contain;">
+</section><section>
+<h2 id="about-the-distributed-pong-_infrastructure_-pt-2">About the Distributed Pong <em>Infrastructure</em> (pt. 2)</h2>
+<h3 id="centralized-infrastructure">Centralized infrastructure</h3>
+<p>Let’s suppose a central server is coordinating the game:</p>
+<img src="./centralised.svg" alt="Centralized infrastructure for Pong" style="max-width: 95vw; max-height: 80vh; object-fit: contain;">
+</section><section>
+<h2 id="about-the-distributed-pong-_infrastructure_-pt-3">About the Distributed Pong <em>Infrastructure</em> (pt. 3)</h2>
+<h3 id="brokered-infrastructure">Brokered infrastructure</h3>
+<p>Let’s suppose a central server is coordinating the game, but a broker is used to <em>relay</em> messages:</p>
+<img src="./brokered.svg" alt="Brokered infrastructure for Pong" style="max-width: 95vw; max-height: 80vh; object-fit: contain;">
+</section><section>
+<h2 id="about-the-distributed-pong-_infrastructure_-pt-4">About the Distributed Pong <em>Infrastructure</em> (pt. 4)</h2>
+<h3 id="replicated-infrastructure">Replicated infrastructure</h3>
+<p>Like the centralised one, but the server is replicated and a consensus protocol is used to keep replicas in sync:</p>
+<img src="./replicated.svg" alt="Replicated infrastructure for Pong" style="max-width: 95vw; max-height: 80vh; object-fit: contain;">
+</section><section>
+<h2 id="about-the-distributed-pong-_infrastructure_-pt-5">About the Distributed Pong <em>Infrastructure</em> (pt. 5)</h2>
+<h3 id="what-to-choose">What to choose?</h3>
+<ol>
+<li>Local infrastructure implies no <em>distribution</em> for players</li>
+<li>Centralized infrastructure implies a <em>single point of failure</em> (the server)
+<ul>
+<li>plus it <em>complicates deploy</em>:
+<ol>
+<li>who’s in charge of starting the server?
+<ul>
+<li>e.g., one player (makes the start-up procedure more complex)</li>
+<li>e.g., hosted online (makes access control more critical, adds deploy and maintenance costs)</li>
+</ul>
+</li>
+<li>where should the server be located?</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>Brokered infrastructure implies <strong>two</strong> <em>single points of failure</em> (the broker, the server)
+<ul>
+<li>essentially, it has all the <em>drawbacks</em> of the centralized infrastructure, plus the <em>complexity</em> of the broker
+<ol>
+<li>where to deploy the broker?</li>
+<li>potentially <em>higher</em> latency, due to the <em>additional</em> hop for message propagation</li>
+</ol>
+</li>
+<li>may temporally <em>decouple</em> the server from the clients, which is a <strong>non-goal</strong> in our case</li>
+</ul>
+</li>
+<li>Replicated infrastructure is <em>overkill</em> for a simple online game
+<ul>
+<li>for video games, it’s better to <em>prioritize availability</em> over consistency</li>
+<li>no data storage $\implies$ no strong need for <em>consistency</em></li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="towards-_distributed_-pong-pt-2">Towards <em>Distributed</em> Pong (pt. 2)</h2>
+<br>
+<ol start="3">
+<li><strong>Design</strong>:
+<ul>
+<li>are there <em>infrastructural components</em> that need to be introduced? <em>how many</em>?
+<ul>
+<li>e.g., one <em>server</em> to coordinate <em>$N$ clients</em> (one for each player)</li>
+</ul>
+</li>
+<li>how do components	<em>distribute</em> over the network? <em>where</em>?
+<ul>
+<li>e.g., <em>centralised</em> server on the cloud, <em>clients</em> on all users’ computers</li>
+<li>e.g., <em>centralised</em> server on <strong>one</strong> user’s computer, <em>clients</em> on <strong>all</strong> other users’ computers</li>
+</ul>
+</li>
+<li>how do <em>domain entities</em> <strong>map to</strong> <em>infrastructural components</em>?
+<ul>
+<li>e.g., <code>PongGame</code> entity updated by <em>the server</em> and replicated on <em>all clients</em>, in a <em>master-slave</em> fashion</li>
+<li>e.g., one <code>PongView</code> entity <em>per client</em>, to render the game state on the local screen</li>
+<li>e.g., one <code>InputHandler</code> entity <em>per client</em>, to grasp local inputs and send them to the server</li>
+<li>e.g., one <code>EventHandler</code> entity on the server, to receive remote inputs and update the <code>PongGame</code> entity accordingly</li>
+</ul>
+</li>
+<li>how do components <em>communicate</em>? <em>what</em>? <em>which</em> <strong>interaction patterns</strong> do they enact?
+<ul>
+<li>e.g., <em>request-response</em>? <em>publish-subscribe</em>?</li>
+</ul>
+</li>
+<li>do components need to store data? <em>what data</em>? <em>where</em>? <em>when</em>? <em>how many <strong>copies</strong></em>?
+<ul>
+<li>e.g., no real need for data storage, but the overall state of the game must be <em>replicated</em> on all clients ($N+1$ copies)
+<ul>
+<li>replication must be as <em>quick/frequent</em> as possible to avoid <em>inconsistencies</em></li>
+<li>prioritize <em>availability</em> over <em>consistency</em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>how do components <em>find</em> each other?
+<ul>
+<li>e.g. clients are assumed to know the IP of the central server</li>
+</ul>
+</li>
+<li><em>how</em> do components <em>recognize</em> each other?
+<ul>
+<li>e.g. mutual trust is assumed, no need for authentication</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="towards-_distributed_-pong-pt-3">Towards <em>Distributed</em> Pong (pt. 3)</h2>
+<br>
+<ol start="4">
+<li><strong>Implementation</strong>:
+<ul>
+<li>which <strong>network protocols</strong> to use?
+<ul>
+<li>e.g. <em>UDP</em>: good for low-latency, real-time applications (let’s go with this one!)
+<ul>
+<li>no big deal for <em>package loss</em> in a video game, yet <em>duplication</em>, <em>unordered dispatch</em>, and <em>delays</em> may give us headaches</li>
+</ul>
+</li>
+<li>e.g. <em>TCP</em>: good for <em>reliability</em> but may introduce <em>latencies</em>
+<ul>
+<li>may complicate the design of the central server, which will have to manage several <em>simultaneous connections</em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>how should <em>in-transit data</em> be <strong>represented</strong>?
+<ul>
+<li>e.g. any binary one would be better, to avoid latency bandwidth waste
+<ul>
+<li>we’ll go with <em>JSON</em>, for didactic purposes, then switch to <a href="https://bsonspec.org/">BSON</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>no need</strong> for <em>storage</em> capabilities, so no need for a <em>database</em></li>
+<li>trust-based <em>communication</em> $\implies$ no need for <em>authentication</em></li>
+<li>trust-based <em>authorization</em> each client should only be able to command <em>one and only one paddle</em>
+<ul>
+<li><em>first-come-first-served</em> policy for paddle assignment</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+
+</section>
+</section><section>
+
+
+<section data-shortcode-section="">
+<h2 id="distributed-pong-architecture">Distributed Pong Architecture</h2>
+<h3 id="components-view">Components view</h3>
+<p><img src="https://www.plantuml.com/plantuml/svg/TP2n2iCW48Ptd-9mZs3cKW9TijSyWCI35jGhfw53wRltMhD8wF8FVfyVw5Igvxgbg385X2ibVDwG4LuAOANqe8ovmeM8mptxIgpUghbwfbB1Ql05Plkxu5SHG2y5UGUBxJhQ8IVfn1qxmJ9WeX5LqbrxREtnq6vW6V-q6tQ2PS2m4VNRTXPEmpQSk-U8SJoSC0Vvb0y0" alt="Components diagram of the Distributed Pong architecture">
+or
+<img src="https://www.plantuml.com/plantuml/svg/TP112iCW44NtdkBZFaAoBYNGJGuG3o3HHK6TCffLwDqx8IugfPiHvZt_5-TI7TSzHPN91-Y5IiMeuGgM4OS2DaeloY5NF8ZOFxEhnB9tcvpGjWHk5-pOwNeDd4IF3Q-2PS14SwflfRuxfwjpmj5dDs2dFzaNNWNBW65pgf8jHRTX7-xTgyNuNSuXU_c03m00" alt="Components diagram of the Distributed Pong architecture (coordinator hosted by some user)"></p>
+<ul>
+<li>
+<p><strong>Coordinator</strong> is the central server, coordinating the game</p>
+<ul>
+<li>it runs the <em>game loop</em> and <em>updates</em> the game state, <em>without</em> listening to the keyboard, <em>nor</em> rendering the game</li>
+<li>it <em>receives</em> inputs from the clients</li>
+<li>it <em>periodically sends</em> the updated game state to the clients</li>
+</ul>
+</li>
+<li>
+<p><strong>Terminal</strong> is the client’s end point, visualising the game</p>
+<ul>
+<li>it <em>listens</em> to the keyboard and <em>sends</em> inputs to the coordinator</li>
+<li>it <em>receives</em> the game state from the coordinator and <em>renders</em> it on the screen</li>
+</ul>
+</li>
+<li>
+<p><strong>Event-Based Architecture</strong>:</p>
+<ul>
+<li>the coordinator <em>publishes</em> the “game state update” events and <em>consumes</em> “input” events</li>
+<li>terminals <em>consume</em> the “game state update” events and <em>publish</em> “input” events</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="distributed-pong-architecture-1">Distributed Pong Architecture</h2>
+<h3 id="behavioural-view">Behavioural view</h3>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><p><img src="https://www.plantuml.com/plantuml/svg/XLHDQnj13BtFhn0v5apfrGGJ2FG30WsrSx9p63oACx2hMJIpRal8V-_EhBhQPOVsO90qxpt9qcFlOhAS-hOnGv0GxaDWvyccmF1c0CRgZQUkJ_46R8JxCORRM_pLMOe-qBTSsUr0yNtdR48XI39dVEzJeHYOaHvyJ4YUBeKsPKKz6iLziIt2GmXTmUKi9sNS2ODNfBy3Zt5zO6KybIaBOmopi2c8uuTds6nsitekJyARexFn5Ttp0hA5Sw3O2rRhHMdV87RbeKIgBbJxaf1FzEdZvyVzYI8EKYwkXBJljEGjH2HteXI67tBhoJQP-6uC69YEDwSk5pqeC9xHN_54BnpQfOnYrpgoZYrSa91jGYERutMJcbG5zMx4bWUP0UgUF9Iuwh2w9m-IL4nX_cl8fv6hm1z83XbvQS6BRN6C9v_kSvPxKkBVZy6JzDD5YTRG9PSrKzV8aoJoCk7-OHsTGC-sf39QLxoYAoXBWQ-MN8DS_aUfI07U5iCBBjSaX4szgltbTWlZdlKZ9EFemMRKrKLMrbqAANojfSlPGhWY_sHVCx2Igtert33-_AEwuUEhTmvfQ3hPsjmXkRvj_W00%22" alt="State diagrams of the Coordinator and Terminal nodes"></p>
+</div>
+<div class="col " style="text-align: left;"><br>
+<ul>
+<li>2 sorts of <strong>processes</strong>
+<ul>
+<li>one for the <em>coordinator</em></li>
+<li>one for the <em>terminals</em></li>
+</ul>
+</li>
+<li>2 sorts of <strong>communication channels</strong> for 2 sorts of <strong>events</strong>:
+<ul>
+<li>one for the <em>game state updates</em></li>
+<li>one for the <em>inputs</em></li>
+</ul>
+</li>
+<li>each process is carrying on <strong>several <em>concurrent</em> activities</strong>:
+<ul>
+<li>the <em>coordinator</em>:
+<ol>
+<li>listen for incoming <em>inputs</em> from terminals</li>
+<li>execute the <em>game loop</em> and send back <em>game state updates</em></li>
+</ol>
+</li>
+<li>the <em>terminals</em>:
+<ol>
+<li>sends <em>inputs</em> to the coordinator</li>
+<li>listen for incoming <em>game state updates</em> from the coordinator</li>
+<li>render the <em>game state</em> on the screen</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section><section>
+<h2 id="distributed-pong-architecture-2">Distributed Pong Architecture</h2>
+<h3 id="interaction-view">Interaction view</h3>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col col-5" style="text-align: left;"><p><img src="https://www.plantuml.com/plantuml/svg/VPBHIyCm4CRVxwyuzZA5YgoFXSYSu8i-2DKNdPIut6PXpPNa2eBiVpUDMzSmjfTmlNpVxxiccNlHJhfc2z-r8LmponV_0EYLiCF9coU7imbgZtqvWpQewrNTQYiuUINNr5Plzuh3PwfwO7Ocj0FlZ3jFt7cIdG_PES36STVYCtDxgD_9SOPiAImE6tQ4KZVa8KwBDtV7eGfi7NcFJzKz3CsW60zOu2_Mjksaw6KPhXqtnO2ePhY3ICx7vFn8Ni3Gl4HUd90NEo1h09H2lPR-p6yVNqhqj69hF2e5C1tHJk1TQxGGRdH3w2MKnT8k9GPwzH7_9SH-zaqZAiBX4k_VYGh7NYEX4RrBMqvHxLEhFhMAgLTbjhTcQEGwYKZlefoUsypZPdf58wCZQyZrai6GkCUAUARpi8Jt_GS0" alt="Sequence diagram showing the interaction among the Coordinator and Terminal nodes"></p>
+</div>
+<div class="col " style="text-align: left;"><br>
+<ul>
+<li>this is stressing <em>when</em> messages are <em>exchanged</em>, and by <em>whom</em></li>
+<li>the <em>coordinator</em> shall send <strong>state-update</strong> messages to all <em>terminals</em> once every $1/FPS$ seconds</li>
+<li>the <em>terminals</em> shall send <strong>input</strong> messages to the <em>coordinator</em> whenever a <strong>key</strong> is pressed or released</li>
+</ul>
+</div>
+</div>
+</div>
+
+</section>
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="protocols">
+<h2 id="distributed-pong-protocols">Distributed Pong Protocols</h2>
+
+</section>
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="analysis">
+<h2 id="distributed-pong-analysis">Distributed Pong Analysis</h2>
+
+</section>
+</section>
+
+  
+
+
+</div>
+      
+
+    </div>
+<script type="text/javascript" src="/slides-module2.github.io/reveal-hugo/object-assign.js"></script>
+
+<a href="/slides-module2.github.io/reveal-js/dist/print/" id="print-location" style="display: none;"></a>
+
+<script type="application/json" id="reveal-hugo-site-params">{"custom_theme":"custom-theme.scss","custom_theme_compile":true,"custom_theme_options":{"enablesourcemap":true,"targetpath":"css/custom-theme.css"},"height":"1080","highlight_theme":"solarized-dark","history":true,"mermaid":[{}],"slide_number":true,"theme":"league","transition":"slide","transition_speed":"fast","width":"1920"}</script>
+<script type="application/json" id="reveal-hugo-page-params">null</script>
+
+<script src="/slides-module2.github.io/reveal-js/dist/reveal.js"></script>
+
+
+  
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/markdown/markdown.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/highlight/highlight.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/zoom/zoom.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/notes/notes.js"></script>
+  
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/notes/notes.js"></script>
+
+
+
+
+<script type="text/javascript">
+  
+  
+  function camelize(map) {
+    if (map) {
+      Object.keys(map).forEach(function(k) {
+        newK = k.replace(/(\_\w)/g, function(m) { return m[1].toUpperCase() });
+        if (newK != k) {
+          map[newK] = map[k];
+          delete map[k];
+        }
+      });
+    }
+    return map;
+  }
+
+  var revealHugoDefaults = { center: true, controls: true, history: true, progress: true, transition: "slide" };
+
+  var revealHugoPlugins = { 
+    plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom ]
+   };
+  var revealHugoSiteParams = JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);
+  var revealHugoPageParams = JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);
+  
+  var options = Object.assign({},
+    camelize(revealHugoDefaults),
+    camelize(revealHugoSiteParams),
+    camelize(revealHugoPageParams),
+    camelize(revealHugoPlugins));
+  Reveal.initialize(options);
+</script>
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+
+
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+</script>
+
+<script type="text/javascript" id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+<script>
+  if (/.*?(\?|&)print-pdf/.test(window.location.toString())) {
+      var ytVideos = document.getElementsByTagName("iframe")
+      for (let i = 0; i < ytVideos.length; i++) {
+          var videoFrame = ytVideos[i]
+          var isYouTube = /^https?:\/\/(www.)youtube\.com\/.*/.test(videoFrame.src)
+          if (isYouTube) {
+              console.log(`Removing ${videoFrame.src}`)
+              var parent = videoFrame.parentElement
+              videoFrame.remove()
+              var p = document.createElement('p')
+              p.append(
+                  document.createTextNode(
+                      "There was an embedded video here, but it is disabled in the printed version of the slides."
+                  )
+              )
+              p.append(document.createElement('br'))
+              p.append(
+                  document.createTextNode(
+                      `Visit instead ${
+                          videoFrame.src
+                      } or ${
+                          videoFrame.src.replace(
+                              /(^https?:\/\/(www.)youtube\.com)\/(embed\/)(\w+).*/,
+                              "https://www.youtube.com/watch?v=$4"
+                          )
+                      }`
+                  )
+              )
+              parent.appendChild(p)
+          }
+      }
+  }
+</script>
+
+
+    
+  
+
+</body></html>

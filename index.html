@@ -1,0 +1,425 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta name="generator" content="Hugo 0.136.2">
+    <meta charset="utf-8">
+<title>About the course</title>
+<meta name="description" content="Presentation of the course 'Distributed Systems — Module 2'">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><link rel="stylesheet" href="/slides-module2.github.io/reveal-js/dist/reset.css">
+<link rel="stylesheet" href="/slides-module2.github.io/reveal-js/dist/reveal.css">
+  <link rel="stylesheet" href="/slides-module2.github.io/css/custom-theme.min.e415e19db372f1135499fc2ea3a836cea3f048a00982e05f2d60d127261af094.css" id="theme"><link rel="stylesheet" href="/slides-module2.github.io/highlight-js/solarized-dark.min.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto Mono" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Oxygen Mono" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/gh/DanySK/css-blur-animation/blur.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://kit.fontawesome.com/81ac037be0.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+<script src="https://unibo-fc-isi-ds/slides-module2.github.io//plantuml.js"></script>
+
+  </head>
+  <body>
+    
+    <div class="reveal">
+      <div class="slides">
+  
+
+    <section><h1 id="hahahugoshortcode1s0hbhb">Distributes Systems — Module 2</h1>
+<h2 id="hahahugoshortcode1s1hbhb">A.Y. 2024/2025</h2>
+<br>
+<h3 id="prof-hahahugoshortcode1s2hbhb-tutor-hahahugoshortcode1s3hbhb">Prof. <a href="mailto:giovanni.ciatto@unibo.it">Giovanni Ciatto</a>, Tutor: <a href="mailto:matteo.magnini@unibo.it">Matteo Magnini</a></h3>
+<br>
+<p>Compiled on: 2024-10-25
+ — <a href="?print-pdf&amp;pdfSeparateFragments=false"><i class="fa fa-print" aria-hidden="true"></i> printable version</a></p>
+<!-- [<i class="fa fa-undo" aria-hidden="true"></i> back](..) -->
+</section>
+
+<section data-noprocess="" data-shortcode-slide="" id="toc">
+  
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li>
+<p>General aspects</p>
+<ol>
+<li><a href="./">About the course</a> (this page)
+<ul>
+<li><a href="./#/links">Useful links</a></li>
+<li><a href="./#/rules">Project work rules</a></li>
+</ul>
+</li>
+<li><a href="./preliminaries/">Preliminaries</a></li>
+<li><a href="./communication/">Communication mechanisms</a>
+<ul>
+<li>Exercise: <a href="./communication/#/exercise-tcp-group-chat">TCP Group Chat</a></li>
+</ul>
+</li>
+<li><a href="./presentation/">Presentation</a>
+<ul>
+<li>Exercise: <a href="./presentation/#/exercise-rpc-auth-service">RPC-based Authentication Service</a></li>
+<li>Exercise: <a href="./presentation/#/exercise-rpc-auth-service-secure">Secure RPC-based Authentication Service</a></li>
+</ul>
+</li>
+<li>[Tentative] Testing <!-- [Testing](./testing/) --></li>
+</ol>
+  <!-- [Miscellanea](./misc/) -->
+</li>
+<li>
+<p>Case Studies</p>
+<ul>
+<li>[WIP] <a href="./pong/">PONG</a>
+<ol>
+<li><a href="./pong/#/game-loop">Game Loop</a></li>
+<li><a href="./pong/#/model">Game Model</a></li>
+<li><a href="./pong/#/io">I/O</a></li>
+<li>[WIP] <a href="./pong/#/architecture">Architecture</a></li>
+<li>[WIP] <a href="./pong/#/protocols">Protocols</a></li>
+<li>[WIP] <a href="./pong/#/analysis">Analysis</a></li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="teachers">Teachers</h2>
+<h3 id="prof-giovanni-ciatto">Prof. Giovanni Ciatto</h3>
+<ul>
+<li>email: <a href="mailto:giovanni.ciatto@unibo.it"><code>giovanni.ciatto@unibo.it</code></a></li>
+<li>homepage: <a href="https://www.unibo.it/sitoweb/giovanni.ciatto/en">https://www.unibo.it/sitoweb/giovanni.ciatto/en</a></li>
+<li>office hours: by appointment (send me an email)</li>
+</ul>
+<h3 id="tutor-matteo-magnini">Tutor Matteo Magnini</h3>
+<ul>
+<li>email: <a href="mailto:matteo.magnini@unibo.it"><code>matteo.magnini@unibo.it</code></a></li>
+<li>homepage: <a href="https://www.unibo.it/sitoweb/matteo.magnini/en">https://www.unibo.it/sitoweb/matteo.magnini/en</a></li>
+<li>office hours: by appointment (send me an email)</li>
+</ul>
+</section><section>
+<h2 id="prioritize-the-hahahugoshortcode1s2hbhb">Prioritize the <a href="https://virtuale.unibo.it/mod/forum/view.php?id=1678931">General forum</a></h2>
+<ul>
+<li>All technical question</li>
+<li>Any other non-personal question</li>
+</ul>
+<p>
+</p><h2 id="when-using-the-email">When using the email</h2>
+<ul>
+<li>Include <em>all</em> teachers in CC, <strong>always</strong>, there including prof. <a href="mailto:andrea.omicini@unibo.it">Omicini</a></li>
+<li>Clarify the <em>academic year</em> and the <em>name of the course</em> in the subject</li>
+</ul>
+</section>
+
+<section data-noprocess="" data-shortcode-slide="" id="links">
+  
+<h2 id="pages-of-the-course">Pages of the course</h2>
+<ul>
+<li><a href="https://www.unibo.it/en/study/phd-professional-masters-specialisation-schools-and-other-programmes/course-unit-catalogue/course-unit/2024/493397">Institutional Page of the Course</a></li>
+<li><a href="https://virtuale.unibo.it/course/view.php?id=57565">Virtuale Page of the Course</a>
+<ul>
+<li>please enroll if you didn’t already</li>
+</ul>
+</li>
+<li><a href="https://apice.unibo.it/xwiki/bin/view/Course/Ds2425/">APICe Page of the Course</a></li>
+<li><a href="./">These slides</a></li>
+<li><a href="https://github.com/unibo-fc-isi-ds/lab-snippets">Examples and Exercises Repository</a></li>
+<li><a href="https://matteomagnini.github.io/distributed-systems-python-101/#/">Python Programming 101</a></li>
+</ul>
+</section><section>
+<h2 id="organization-of-module-2">Organization of Module 2</h2>
+<ul>
+<li>Lectures in lab with immediate <em>hands-on</em></li>
+<li>Exercises and examples in Python
+<ul>
+<li>submission of <em>exercises</em> <a href="https://github.com/">via GitHub</a> may grant you <em>extra points</em></li>
+</ul>
+</li>
+<li>Final project work in any language of your choice</li>
+</ul>
+</section><section>
+<h2 id="timetable">Time—table</h2>
+<ul>
+<li><strong>Wednesday 15:00–17:00</strong> (2h) — Lab 3.1
+<ul>
+<li>cf. <a href="https://www.unibo.it/en/study/phd-professional-masters-specialisation-schools-and-other-programmes/course-unit-catalogue/course-unit/2024/493397/orariolezioni">official timetable</a> for any change</li>
+</ul>
+</li>
+</ul>
+<p>Changes will be published on the <a href="https://virtuale.unibo.it/mod/forum/view.php?id=1609370">News forum</a></p>
+</section>
+
+<section data-noprocess="" data-shortcode-slide="" id="rules">
+  
+<h2 id="workflow-for-the-project-work-pt-1">Workflow for the project work (pt. 1)</h2>
+<blockquote>
+<p>Detailed rules here: <a href="https://apice.unibo.it/xwiki/bin/view/Course/Ds2425/Projects/Rules">https://apice.unibo.it/xwiki/bin/view/Course/Ds2425/Projects/Rules</a></p>
+</blockquote>
+<ol>
+<li>
+<p><strong>Propose</strong> your project idea on the <a href="https://virtuale.unibo.it/mod/forum/view.php?id=1678936">Projects forum</a></p>
+<ul>
+<li>1-3 students per <em>group</em></li>
+<li>open a discussion thread named <code>[Surname1, Surname2, ...] Project Proposal: &lt;your project name&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Any <em>subsequent communication</em> on the project should be done on the <strong>same thread</strong></p>
+<ul>
+<li>use the thread as a <em>backlog</em> of any official communication concerning the administration of your project work</li>
+<li>if you want to talk <em>privately</em> about your project work, <em>mention the URL</em> of your project’s thread in your email</li>
+</ul>
+</li>
+<li>
+<p><strong>Wait</strong> for the teachers to <em>approve</em> your proposal</p>
+<ul>
+<li>most likely, we’ll try to estimate the effort and ask for changes if too much or too little</li>
+<li>we’ll also check for overlaps with other groups</li>
+</ul>
+</li>
+<li>
+<p>Create a <strong>GitHub repository</strong> where to develop your project and post the URL onto your project’s thread</p>
+<ul>
+<li>make all the <em>members</em> of the group collaborators on the repository</li>
+<li>give <em>full admin</em> rights to the teachers:
+<ul>
+<li>Usernames: <a href="https://github.com/gciatto"><code>gciatto</code></a>, <a href="https://github.com/MatteoMagnini"><code>matteomagnini</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section>
+
+<section data-noprocess="" data-shortcode-slide="" id="rules">
+  
+<h2 id="workflow-for-the-project-work-pt-2">Workflow for the project work (pt. 2)</h2>
+<blockquote>
+<p>Detailed rules here: <a href="https://apice.unibo.it/xwiki/bin/view/Course/Ds2425/Projects/Rules">https://apice.unibo.it/xwiki/bin/view/Course/Ds2425/Projects/Rules</a></p>
+</blockquote>
+<ol start="4">
+<li>
+<p><strong>Work</strong> on your project:</p>
+<ul>
+<li><em>commit</em> and <em>push</em> your changes often
+<ul>
+<li>only the <code>master</code> or <code>main</code> branch will be considered for the evaluation</li>
+</ul>
+</li>
+<li>in parallel, or later, write a <em>report</em> about your report following <a href="https://github.com/unibo-fc-isi-ds/resources/blob/main/template-report-final.md">this template</a></li>
+</ul>
+</li>
+<li>
+<p>Once done, post a <em>message</em> on your <em>project’s thread</em> to signal the end of the work</p>
+<ul>
+<li>we’ll <em>clone</em> your repository and evaluate the code</li>
+</ul>
+</li>
+<li>
+<p><strong>Edits</strong> may be requested by the teachers, to either the code or the report (or both)</p>
+</li>
+<li>
+<p>Once the teachers are satisfied, you’ll be requested to <strong>present</strong> your work to prof. Omicini</p>
+<ul>
+<li>after setting up a meeting with him, in private</li>
+<li>12-15 minutes <em>presentation</em> + 5-10 minutes <em>Q&amp;A</em></li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="goals">Goals</h2>
+<ul>
+<li>Teach you how to <strong>design</strong> and <strong>develop</strong> Distributed Systems, in practice…</li>
+<li>… via a <em>running example</em> (namely, distributed <a href="https://en.wikipedia.org/wiki/Pong">Pong</a>)</li>
+<li>Give you a <em>reference</em> for developing your final <strong>project work</strong></li>
+</ul>
+</section><section>
+<h2 id="topics">Topics</h2>
+<ul>
+<li>Distributed <strong>architectures</strong> and <strong>protocols</strong></li>
+<li>Communication <strong>mechanisms</strong> (TCP / UDP <em>sockets</em>)</li>
+<li><em>Presentation</em> (<strong>serialization</strong> and <strong>deseralization</strong>)</li>
+<li><strong>Issues</strong> of distributed systems programming</li>
+<li>[Hopefully] <strong>Testing</strong> distributed systems</li>
+<li>[Hopefully] Overview on distributed programming <strong>frameworks</strong> / <strong>libraries</strong></li>
+</ul>
+</section><section>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Basic knowledge of Python (see <a href="https://matteomagnini.github.io/distributed-systems-python-101/#/">Python Programming 101</a> if missing)</li>
+<li>Basic knowledge of Git (see <a href="https://unibo-dtm-se.github.io/course-slides/dvcs-basics/#/">these slides</a> if missing)</li>
+<li>Basic knowledge of Linux shell (see <a href="https://unibo-dtm-se.github.io/course-slides/preliminaries/#/">these slides</a> if missing)</li>
+<li>Basic understanding of computer networks, ISO/OSI model, TCP/IP stack</li>
+</ul>
+</section><section>
+<h2 id="software-requirements">Software Requirements</h2>
+<h3 id="required">Required</h3>
+<ul>
+<li>A working internet connection</li>
+<li>A working Python 3.10+ installation</li>
+</ul>
+<h3 id="recommended">Recommended</h3>
+<ul>
+<li>PyCharm OR <em>Visual Studio Code</em></li>
+<li>A decent Unix terminal
+<ul>
+<li>prefer <em>Git Bash</em> on Windows</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h1 id="lecture-is-over">Lecture is Over</h1>
+<br>
+<p>Compiled on: 2024-10-25
+ — <a href="?print-pdf&amp;pdfSeparateFragments=false"><i class="fa fa-print" aria-hidden="true"></i> printable version</a></p>
+<p><a href="./#/toc"><i class="fa fa-undo" aria-hidden="true"></i> back to ToC</a></p>
+</section>
+
+  
+
+
+</div>
+      
+
+    </div>
+<script type="text/javascript" src="/slides-module2.github.io/reveal-hugo/object-assign.js"></script>
+
+<a href="/slides-module2.github.io/reveal-js/dist/print/" id="print-location" style="display: none;"></a>
+
+<script type="application/json" id="reveal-hugo-site-params">{"custom_theme":"custom-theme.scss","custom_theme_compile":true,"custom_theme_options":{"enablesourcemap":true,"targetpath":"css/custom-theme.css"},"height":"1080","highlight_theme":"solarized-dark","history":true,"mermaid":[{}],"slide_number":true,"theme":"league","transition":"slide","transition_speed":"fast","width":"1920"}</script>
+<script type="application/json" id="reveal-hugo-page-params">null</script>
+
+<script src="/slides-module2.github.io/reveal-js/dist/reveal.js"></script>
+
+
+  
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/markdown/markdown.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/highlight/highlight.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/zoom/zoom.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/notes/notes.js"></script>
+  
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/notes/notes.js"></script>
+
+
+
+
+<script type="text/javascript">
+  
+  
+  function camelize(map) {
+    if (map) {
+      Object.keys(map).forEach(function(k) {
+        newK = k.replace(/(\_\w)/g, function(m) { return m[1].toUpperCase() });
+        if (newK != k) {
+          map[newK] = map[k];
+          delete map[k];
+        }
+      });
+    }
+    return map;
+  }
+
+  var revealHugoDefaults = { center: true, controls: true, history: true, progress: true, transition: "slide" };
+
+  var revealHugoPlugins = { 
+    plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom ]
+   };
+  var revealHugoSiteParams = JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);
+  var revealHugoPageParams = JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);
+  
+  var options = Object.assign({},
+    camelize(revealHugoDefaults),
+    camelize(revealHugoSiteParams),
+    camelize(revealHugoPageParams),
+    camelize(revealHugoPlugins));
+  Reveal.initialize(options);
+</script>
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+
+
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+</script>
+
+<script type="text/javascript" id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+<script>
+  if (/.*?(\?|&)print-pdf/.test(window.location.toString())) {
+      var ytVideos = document.getElementsByTagName("iframe")
+      for (let i = 0; i < ytVideos.length; i++) {
+          var videoFrame = ytVideos[i]
+          var isYouTube = /^https?:\/\/(www.)youtube\.com\/.*/.test(videoFrame.src)
+          if (isYouTube) {
+              console.log(`Removing ${videoFrame.src}`)
+              var parent = videoFrame.parentElement
+              videoFrame.remove()
+              var p = document.createElement('p')
+              p.append(
+                  document.createTextNode(
+                      "There was an embedded video here, but it is disabled in the printed version of the slides."
+                  )
+              )
+              p.append(document.createElement('br'))
+              p.append(
+                  document.createTextNode(
+                      `Visit instead ${
+                          videoFrame.src
+                      } or ${
+                          videoFrame.src.replace(
+                              /(^https?:\/\/(www.)youtube\.com)\/(embed\/)(\w+).*/,
+                              "https://www.youtube.com/watch?v=$4"
+                          )
+                      }`
+                  )
+              )
+              parent.appendChild(p)
+          }
+      }
+  }
+</script>
+
+
+    
+  
+
+</body></html>

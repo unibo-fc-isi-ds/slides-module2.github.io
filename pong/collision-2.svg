@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="188.74298mm"
+   height="86.404076mm"
+   viewBox="0 0 188.74298 86.404076"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   sodipodi:docname="collision-2.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.0369529"
+     inkscape:cx="143.20805"
+     inkscape:cy="200.5877"
+     inkscape:window-width="2560"
+     inkscape:window-height="1368"
+     inkscape:window-x="1600"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="marker22"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path22" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Stop"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path23" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Livello 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-11.541162,-59.505283)">
+    <rect
+       style="fill:#ffb380;stroke:#008000;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+       id="rect2"
+       width="177.58763"
+       height="35.721649"
+       x="12.041162"
+       y="60.005283" />
+    <text
+       xml:space="preserve"
+       style="font-size:9.87777px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#ffffff;stroke:none;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+       x="91.381935"
+       y="81.570267"
+       id="text2-9"><tspan
+         sodipodi:role="line"
+         id="tspan2-4"
+         style="fill:#ffffff;stroke:none;stroke-width:1"
+         x="91.381935"
+         y="81.570267">wall</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:7.76111px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#000000;stroke:none;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+       x="80.677742"
+       y="114.94253"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="font-size:7.76111px;stroke-width:1"
+         x="80.677742"
+         y="114.94253"><tspan
+   style="fill:#0000ff"
+   id="tspan12">ball</tspan>.overlaps(<tspan
+   style="fill:#ffb380"
+   id="tspan15">wall</tspan>) <tspan
+   style="fill:#008000"
+   id="tspan4"># True</tspan></tspan><tspan
+         sodipodi:role="line"
+         style="font-size:7.76111px;stroke-width:1"
+         x="80.677742"
+         y="124.64391"
+         id="tspan5"><tspan
+   style="fill:#0000ff"
+   id="tspan11">ball</tspan>.is_inside(<tspan
+   style="fill:#ffb380"
+   id="tspan16">wall</tspan>) <tspan
+   style="fill:#008000"
+   id="tspan10"># False</tspan></tspan><tspan
+         sodipodi:role="line"
+         style="font-size:7.76111px;stroke-width:1"
+         x="80.677742"
+         y="134.34531"
+         id="tspan6"><tspan
+   style="fill:#0000ff"
+   id="tspan13">ball</tspan>.intersection_with(<tspan
+   style="fill:#ffb380"
+   id="tspan17">wall</tspan>) <tspan
+   style="fill:#008000"
+   id="tspan9"># </tspan><tspan
+   id="tspan20"
+   style="fill:#ff0000">rect</tspan></tspan><tspan
+         sodipodi:role="line"
+         style="font-size:7.76111px;stroke-width:1"
+         x="80.677742"
+         y="144.04669"
+         id="tspan7"><tspan
+   style="fill:#0000ff"
+   id="tspan14">ball</tspan>.hits(<tspan
+   style="fill:#ffb380"
+   id="tspan18">wall</tspan>) <tspan
+   style="fill:#008000"
+   id="tspan8"># {UP: <tspan
+   style="fill:#ff0000"
+   id="tspan21">rect</tspan>.<tspan
+   style="fill:#00ff00"
+   id="tspan22">height</tspan>}</tspan> </tspan></text>
+    <g
+       id="g3"
+       transform="translate(-16.281006,-35.167394)">
+      <g
+         id="g2"
+         transform="translate(-42.100515,-58.175258)">
+        <ellipse
+           style="fill:#0000ff;stroke:none;stroke-width:1.53318"
+           id="path1"
+           cx="105"
+           cy="198.25516"
+           rx="20.40609"
+           ry="19.890625" />
+        <rect
+           style="fill:none;stroke:#008000;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+           id="rect1"
+           width="41.34536"
+           height="40.31443"
+           x="84.327316"
+           y="178.09793" />
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:9.87777px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#ffffff;stroke:none;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+         x="54.31076"
+         y="143.78406"
+         id="text2"><tspan
+           sodipodi:role="line"
+           id="tspan2"
+           style="fill:#ffffff;stroke:none;stroke-width:1"
+           x="54.31076"
+           y="143.78406">ball</tspan></text>
+    </g>
+    <rect
+       style="fill:#ff0000;stroke:#008000;stroke-width:1;stroke-dasharray:none"
+       id="rect3"
+       width="41.84536"
+       height="11.471653"
+       x="25.945795"
+       y="84.755272" />
+    <text
+       xml:space="preserve"
+       style="font-size:9.87777px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#ffffff;stroke:none;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+       x="37.415447"
+       y="94.195259"
+       id="text2-9-6"><tspan
+         sodipodi:role="line"
+         id="tspan2-4-1"
+         style="fill:#ffffff;stroke:none;stroke-width:1"
+         x="37.415447"
+         y="94.195259">rect</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#00ff00;stroke:none;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+       x="77.661377"
+       y="91.975586"
+       id="text2-9-6-2"><tspan
+         sodipodi:role="line"
+         id="tspan2-4-1-0"
+         style="font-size:5.64444px;fill:#00ff00;stroke:none;stroke-width:1"
+         x="77.661377"
+         y="91.975586">rect.height</tspan></text>
+    <path
+       style="fill:#ff0000;stroke:#00ff00;stroke-width:1;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-start:url(#marker22);marker-end:url(#Stop)"
+       d="M 74.141156,84.755272 V 96.226928"
+       id="path21" />
+  </g>
+</svg>

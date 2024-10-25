@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1395px" preserveAspectRatio="none" style="width:1340px;height:1395px;background:#FFFFFF;" version="1.1" viewBox="0 0 1340 1395" width="1340px" zoomAndPan="magnify"><defs><filter height="300%" id="f6kmwp261r237" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><rect fill="#ADD8E6" height="1383.7469" style="stroke:#A80036;stroke-width:1.0;" width="634.5" x="181" y="6"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="51" x="472.75" y="18.0669">Host 1</text><rect fill="#DDDDDD" height="1383.7469" style="stroke:#A80036;stroke-width:1.0;" width="480" x="837.5" y="6"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="51" x="1052" y="18.0669">Host 2</text><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="87.4297" style="stroke:#A80036;stroke-width:1.0;" width="10" x="206.5" y="148.1625"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="143.1328" style="stroke:#A80036;stroke-width:1.0;" width="10" x="206.5" y="265.1922"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="829.2594" style="stroke:#A80036;stroke-width:1.0;" width="10" x="206.5" y="429.925"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="87.4297" style="stroke:#A80036;stroke-width:1.0;" width="10" x="979.5" y="590.5547"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="418.936" style="stroke:#A80036;stroke-width:1.0;" width="10" x="979.5" y="707.5844"/><rect fill="#90EE90" filter="url(#f6kmwp261r237)" height="91.5327" style="stroke:#000000;stroke-width:2.0;" width="571.5" x="175" y="309.7922"/><rect fill="#FFC0CB" height="44.7999" style="stroke:none;stroke-width:1.0;" width="571.5" x="175" y="356.5251"/><rect fill="#90EE90" filter="url(#f6kmwp261r237)" height="337.7359" style="stroke:#000000;stroke-width:2.0;" width="977.5" x="346" y="781.7844"/><rect fill="#FFC0CB" height="74.0047" style="stroke:none;stroke-width:1.0;" width="977.5" x="346" y="941.9829"/><rect fill="#D3D3D3" height="103.5327" style="stroke:none;stroke-width:1.0;" width="977.5" x="346" y="1015.9876"/><rect fill="#90EE90" filter="url(#f6kmwp261r237)" height="144.7969" style="stroke:#000000;stroke-width:2.0;" width="812.5" x="9" y="1176.6532"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="211" x2="211" y1="73.4297" y2="1338.4501"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="379" x2="379" y1="73.4297" y2="1338.4501"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="684.5" x2="684.5" y1="195.311" y2="1338.4501"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="778.5" x2="778.5" y1="506.6734" y2="1338.4501"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="864.5" x2="864.5" y1="73.4297" y2="1338.4501"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="984" x2="984" y1="73.4297" y2="1338.4501"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:5.0,5.0;" x1="1280.5" x2="1280.5" y1="637.7031" y2="1338.4501"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47" x="185" y="70.1279">Server</text><ellipse cx="211.5" cy="41.1328" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><polygon fill="#A80036" points="207.5,29.1328,213.5,24.1328,211.5,29.1328,213.5,34.1328,207.5,29.1328" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47" x="185" y="1350.4452">Server</text><ellipse cx="211.5" cy="1369.7469" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><polygon fill="#A80036" points="207.5,1357.7469,213.5,1352.7469,211.5,1357.7469,213.5,1362.7469,207.5,1357.7469" style="stroke:#A80036;stroke-width:1.0;"/><rect fill="#FEFECE" filter="url(#f6kmwp261r237)" height="30.2969" style="stroke:#A80036;stroke-width:1.5;" width="43" x="356" y="38.1328"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29" x="363" y="58.1279">OS1</text><rect fill="#FEFECE" filter="url(#f6kmwp261r237)" height="30.2969" style="stroke:#A80036;stroke-width:1.5;" width="43" x="356" y="1337.4501"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29" x="363" y="1357.4452">OS1</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="98" x="632.5" y="1350.4452">ServerSocket</text><path d="M664,1357.7469 L664,1381.7469 M664,1369.7469 L681,1369.7469 " fill="none" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:2.0;"/><ellipse cx="693" cy="1369.7469" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="59" x="746.5" y="1350.4452">Socket2</text><path d="M758.5,1357.7469 L758.5,1381.7469 M758.5,1369.7469 L775.5,1369.7469 " fill="none" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:2.0;"/><ellipse cx="787.5" cy="1369.7469" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><rect fill="#FEFECE" filter="url(#f6kmwp261r237)" height="30.2969" style="stroke:#A80036;stroke-width:1.5;" width="42" x="841.5" y="38.1328"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="28" x="848.5" y="58.1279">OS2</text><rect fill="#FEFECE" filter="url(#f6kmwp261r237)" height="30.2969" style="stroke:#A80036;stroke-width:1.5;" width="42" x="841.5" y="1337.4501"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="28" x="848.5" y="1357.4452">OS2</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43" x="960" y="70.1279">Client</text><ellipse cx="984.5" cy="41.1328" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><polygon fill="#A80036" points="980.5,29.1328,986.5,24.1328,984.5,29.1328,986.5,34.1328,980.5,29.1328" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43" x="960" y="1350.4452">Client</text><ellipse cx="984.5" cy="1369.7469" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><polygon fill="#A80036" points="980.5,1357.7469,986.5,1352.7469,984.5,1357.7469,986.5,1362.7469,980.5,1357.7469" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60" x="1247.5" y="1350.4452">Socket1</text><path d="M1260,1357.7469 L1260,1381.7469 M1260,1369.7469 L1277,1369.7469 " fill="none" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:2.0;"/><ellipse cx="1289" cy="1369.7469" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="87.4297" style="stroke:#A80036;stroke-width:1.0;" width="10" x="206.5" y="148.1625"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="143.1328" style="stroke:#A80036;stroke-width:1.0;" width="10" x="206.5" y="265.1922"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="829.2594" style="stroke:#A80036;stroke-width:1.0;" width="10" x="206.5" y="429.925"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="87.4297" style="stroke:#A80036;stroke-width:1.0;" width="10" x="979.5" y="590.5547"/><rect fill="#FFFFFF" filter="url(#f6kmwp261r237)" height="418.936" style="stroke:#A80036;stroke-width:1.0;" width="10" x="979.5" y="707.5844"/><rect fill="#EEEEEE" filter="url(#f6kmwp261r237)" height="3" style="stroke:#EEEEEE;stroke-width:1.0;" width="1333.5" x="0" y="103.9961"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="1333.5" y1="103.9961" y2="103.9961"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="1333.5" y1="106.9961" y2="106.9961"/><rect fill="#EEEEEE" filter="url(#f6kmwp261r237)" height="23.1328" style="stroke:#000000;stroke-width:2.0;" width="136" x="598.75" y="93.4297"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="117" x="604.75" y="109.4966">server listening</text><polygon fill="#A80036" points="367.5,144.1625,377.5,148.1625,367.5,152.1625,371.5,148.1625" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="216.5" x2="373.5" y1="148.1625" y2="148.1625"/><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="144" x="223.5" y="142.6005">new ServerSocket()</text><polygon fill="#A80036" points="620.5,173.2953,630.5,177.2953,620.5,181.2953,624.5,177.2953" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="379.5" x2="626.5" y1="177.2953" y2="177.2953"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="52" x="386.5" y="172.2294">creation</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="98" x="632.5" y="201.1576">ServerSocket</text><path d="M664,160.1625 L664,184.1625 M664,172.1625 L681,172.1625 " fill="none" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:2.0;"/><ellipse cx="693" cy="172.1625" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><polygon fill="#A80036" points="222.5,231.5922,212.5,235.5922,222.5,239.5922,218.5,235.5922" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="216.5" x2="683.5" y1="235.5922" y2="235.5922"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="160" x="228.5" y="230.5263">return reference to caller</text><polygon fill="#A80036" points="672.5,261.1922,682.5,265.1922,672.5,269.1922,676.5,265.1922" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="216.5" x2="678.5" y1="265.1922" y2="265.1922"/><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="168" x="223.5" y="259.6302">bind(WELL_KNOWN_PORT)</text><polygon fill="#A80036" points="390.5,290.7922,380.5,294.7922,390.5,298.7922,386.5,294.7922" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="384.5" x2="683.5" y1="294.7922" y2="294.7922"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="396.5" y="289.7263">reserve</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="120" x="449.5" y="289.2302">WELL_KNOWN_PORT</text><path d="M175,309.7922 L241,309.7922 L241,316.7922 L231,326.7922 L175,326.7922 L175,309.7922 " fill="#FFD700" style="stroke:#000000;stroke-width:1.0;"/><rect fill="none" height="91.5327" style="stroke:#000000;stroke-width:2.0;" width="571.5" x="175" y="309.7922"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="21" x="190" y="322.8591">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="256" y="322.3979">[</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="105" x="261" y="321.9342">WELL_KNOWN_PORT</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="130" x="370" y="322.3979">is available on OS1]</text><polygon fill="#A80036" points="227.5,344.5251,217.5,348.5251,227.5,352.5251,223.5,348.5251" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="221.5" x2="683.5" y1="348.5251" y2="348.5251"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="46" x="233.5" y="343.4591">returns</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="32" x="283.5" y="342.9631">void</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="175" x2="746.5" y1="357.5251" y2="357.5251"/><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="180" y="368.1307">[</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="105" x="185" y="367.667">WELL_KNOWN_PORT</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="101" x="294" y="368.1307">is busy on OS1]</text><polygon fill="#A80036" points="227.5,389.325,217.5,393.325,227.5,397.325,223.5,393.325" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="221.5" x2="683.5" y1="393.325" y2="393.325"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="44" x="233.5" y="388.2591">throws</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="104" x="281.5" y="387.763">BindException</text><polygon fill="#A80036" points="672.5,425.925,682.5,429.925,672.5,433.925,676.5,429.925" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="216.5" x2="678.5" y1="429.925" y2="429.925"/><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="64" x="223.5" y="424.363">accept()</text><polygon fill="#A80036" points="390.5,455.525,380.5,459.525,390.5,463.525,386.5,459.525" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="384.5" x2="683.5" y1="459.525" y2="459.525"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="157" x="396.5" y="454.4591">listen for connections on</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="120" x="557.5" y="453.963">WELL_KNOWN_PORT</text><polygon fill="#A80036" points="734.5,484.6578,744.5,488.6578,734.5,492.6578,738.5,488.6578" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="379.5" x2="740.5" y1="488.6578" y2="488.6578"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="52" x="386.5" y="483.5919">creation</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="59" x="746.5" y="512.5201">Socket2</text><path d="M758.5,471.525 L758.5,495.525 M758.5,483.525 L775.5,483.525 " fill="none" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:2.0;"/><ellipse cx="787.5" cy="483.525" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><rect fill="#EEEEEE" filter="url(#f6kmwp261r237)" height="3" style="stroke:#EEEEEE;stroke-width:1.0;" width="1333.5" x="0" y="546.3883"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="1333.5" y1="546.3883" y2="546.3883"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="1333.5" y1="549.3883" y2="549.3883"/><rect fill="#EEEEEE" filter="url(#f6kmwp261r237)" height="23.1328" style="stroke:#000000;stroke-width:2.0;" width="149" x="592.25" y="535.8219"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="130" x="598.25" y="551.8888">client connecting</text><polygon fill="#A80036" points="875.5,586.5547,865.5,590.5547,875.5,594.5547,871.5,590.5547" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="869.5" x2="978.5" y1="590.5547" y2="590.5547"/><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="96" x="881.5" y="584.9927">new Socket()</text><polygon fill="#A80036" points="1235.5,615.6875,1245.5,619.6875,1235.5,623.6875,1239.5,619.6875" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="864.5" x2="1241.5" y1="619.6875" y2="619.6875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="52" x="871.5" y="614.6216">creation</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60" x="1247.5" y="643.5498">Socket1</text><path d="M1260,602.5547 L1260,626.5547 M1260,614.5547 L1277,614.5547 " fill="none" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:2.0;"/><ellipse cx="1289" cy="614.5547" fill="#FEFECE" filter="url(#f6kmwp261r237)" rx="12" ry="12" style="stroke:#A80036;stroke-width:2.0;"/><polygon fill="#A80036" points="995.5,673.9844,985.5,677.9844,995.5,681.9844,991.5,677.9844" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="989.5" x2="1279.5" y1="677.9844" y2="677.9844"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="160" x="1001.5" y="672.9185">return reference to caller</text><polygon fill="#A80036" points="1268.5,703.5844,1278.5,707.5844,1268.5,711.5844,1272.5,707.5844" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="989.5" x2="1274.5" y1="707.5844" y2="707.5844"/><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="272" x="996.5" y="702.0224">connect("Host 1", WELL_KNOWN_PORT)</text><polygon fill="#A80036" points="875.5,733.1844,865.5,737.1844,875.5,741.1844,871.5,737.1844" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="869.5" x2="1279.5" y1="737.1844" y2="737.1844"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="145" x="881.5" y="732.1185">connection request for</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="48" x="1030.5" y="731.6224">Host 1</text><polygon fill="#A80036" points="390.5,762.7844,380.5,766.7844,390.5,770.7844,386.5,766.7844" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="384.5" x2="863.5" y1="766.7844" y2="766.7844"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="158" x="396.5" y="761.7185">connection request from</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="48" x="558.5" y="761.2224">Host 2</text><path d="M346,781.7844 L412,781.7844 L412,788.7844 L402,798.7844 L346,798.7844 L346,781.7844 " fill="#FFD700" style="stroke:#000000;stroke-width:1.0;"/><rect fill="none" height="337.7359" style="stroke:#000000;stroke-width:2.0;" width="977.5" x="346" y="781.7844"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="21" x="361" y="794.8513">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="427" y="794.3901">[</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="42" x="432" y="793.9264">Host 1</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="473" x="478" y="794.3901">is reachable on the network &amp; there exists a process on it listening on</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="105" x="955" y="793.9264">WELL_KNOWN_PORT</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="1060" y="794.3901">]</text><polygon fill="#A80036" points="852.5,816.5173,862.5,820.5173,852.5,824.5173,856.5,820.5173" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="379.5" x2="858.5" y1="820.5173" y2="820.5173"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="178" x="386.5" y="815.4513">connection established with</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="48" x="568.5" y="814.9553">Host 2</text><polygon fill="#A80036" points="1268.5,846.1173,1278.5,850.1173,1268.5,854.1173,1272.5,850.1173" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="864.5" x2="1274.5" y1="850.1173" y2="850.1173"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="178" x="871.5" y="845.0513">connection established with</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="48" x="1053.5" y="844.5553">Host 1</text><polygon fill="#A80036" points="1000.5,875.7173,990.5,879.7173,1000.5,883.7173,996.5,879.7173" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="994.5" x2="1279.5" y1="879.7173" y2="879.7173"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="46" x="1006.5" y="874.6514">returns</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="32" x="1056.5" y="874.1553">void</text><path d="M994,892.7173 L994,932.7173 L1171,932.7173 L1171,902.7173 L1161,892.7173 L994,892.7173 " fill="#FBFB77" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:1.0;"/><path d="M1161,892.7173 L1161,902.7173 L1171,902.7173 L1161,892.7173 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="156" x="1000" y="909.7842">Client is connected now,</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="135" x="1000" y="924.917">and ready to interact</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="346" x2="1323.5" y1="942.9829" y2="942.9829"/><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="255" x="351" y="953.1934">[Cannot contact host within timeout]</text><polygon fill="#A80036" points="1268.5,974.3876,1278.5,978.3876,1268.5,982.3876,1272.5,978.3876" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="864.5" x2="1274.5" y1="978.3876" y2="978.3876"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="871.5" y="973.3217">cannot contact</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="48" x="971.5" y="972.8256">Host 1</text><polygon fill="#A80036" points="1000.5,1003.9876,990.5,1007.9876,1000.5,1011.9876,996.5,1007.9876" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="994.5" x2="1279.5" y1="1007.9876" y2="1007.9876"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="44" x="1006.5" y="1002.9217">throws</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="176" x="1054.5" y="1002.4256">SocketTimeoutException</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="346" x2="1323.5" y1="1016.9876" y2="1016.9876"/><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="351" y="1027.5933">[</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="42" x="356" y="1027.1295">Host 1</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="415" x="402" y="1027.5933">is reachable on the network BUT it has no service listening on</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="105" x="821" y="1027.1295">WELL_KNOWN_PORT</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="926" y="1027.5933">]</text><polygon fill="#A80036" points="852.5,1048.3203,862.5,1052.3203,852.5,1056.3203,856.5,1052.3203" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="379.5" x2="858.5" y1="1052.3203" y2="1052.3203"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="123" x="386.5" y="1047.2544">connection refused</text><polygon fill="#A80036" points="1268.5,1077.9203,1278.5,1081.9203,1268.5,1085.9203,1272.5,1081.9203" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="864.5" x2="1274.5" y1="1081.9203" y2="1081.9203"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="158" x="871.5" y="1076.8544">connection refused from</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="48" x="1033.5" y="1076.3583">Host 1</text><polygon fill="#A80036" points="1000.5,1107.5204,990.5,1111.5204,1000.5,1115.5204,996.5,1111.5204" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="994.5" x2="1279.5" y1="1111.5204" y2="1111.5204"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="44" x="1006.5" y="1106.4544">throws</text><text fill="#000000" font-family="monospace" font-size="13" lengthAdjust="spacing" textLength="88" x="1054.5" y="1105.9584">IOException</text><rect fill="#EEEEEE" filter="url(#f6kmwp261r237)" height="3" style="stroke:#EEEEEE;stroke-width:1.0;" width="1333.5" x="0" y="1147.0868"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="1333.5" y1="1147.0868" y2="1147.0868"/><line style="stroke:#000000;stroke-width:1.0;" x1="0" x2="1333.5" y1="1150.0868" y2="1150.0868"/><rect fill="#EEEEEE" filter="url(#f6kmwp261r237)" height="23.1328" style="stroke:#000000;stroke-width:2.0;" width="290" x="521.75" y="1136.5204"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="271" x="527.75" y="1152.5873">in the meanwhile on the server side</text><path d="M9,1176.6532 L75,1176.6532 L75,1183.6532 L65,1193.6532 L9,1193.6532 L9,1176.6532 " fill="#FFD700" style="stroke:#000000;stroke-width:1.0;"/><rect fill="none" height="144.7969" style="stroke:#000000;stroke-width:2.0;" width="812.5" x="9" y="1176.6532"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="21" x="24" y="1189.7201">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="90" y="1189.2588">[</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="42" x="95" y="1188.7951">Host 1</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="473" x="141" y="1189.2588">is reachable on the network &amp; there exists a process on it listening on</text><text fill="#000000" font-family="monospace" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="105" x="618" y="1188.7951">WELL_KNOWN_PORT</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="5" x="723" y="1189.2588">]</text><polygon fill="#A80036" points="767,1226.0516,777,1230.0516,767,1234.0516,771,1230.0516" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;" x1="379.5" x2="773" y1="1230.0516" y2="1230.0516"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="147" x="386.5" y="1209.8529">bind to ephemeral port</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="123" x="386.5" y="1224.9857">connect to Socket1</text><polygon fill="#A80036" points="222.5,1255.1844,212.5,1259.1844,222.5,1263.1844,218.5,1259.1844" style="stroke:#A80036;stroke-width:1.0;"/><line style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="216.5" x2="778" y1="1259.1844" y2="1259.1844"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="177" x="228.5" y="1254.1185">return reference to caller of</text><text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="53" x="409.5" y="1254.1185">accept()</text><path d="M19,1272.1844 L19,1312.1844 L202,1312.1844 L202,1282.1844 L192,1272.1844 L19,1272.1844 " fill="#FBFB77" filter="url(#f6kmwp261r237)" style="stroke:#A80036;stroke-width:1.0;"/><path d="M192,1272.1844 L192,1282.1844 L202,1282.1844 L192,1272.1844 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="162" x="25" y="1289.2513">Server is connected now,</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="135" x="25" y="1304.3841">and ready to interact</text><!--MD5=[b6b0f162183a1478c121269164524788]
+@startuml
+'hide footbox
+skinparam BoxPadding 10
+
+box "Host 1" #LightBlue
+	control Server
+	participant OS1 
+	' boundary Socket2
+
+== server listening ==
+
+	Server -> OS1 :  ""new ServerSocket()""
+	activate Server
+
+	create boundary ServerSocket
+	OS1 -> ServerSocket : creation
+	Server <- - ServerSocket : return reference to caller
+	deactivate Server
+
+	Server -> ServerSocket : ""bind(WELL_KNOWN_PORT)""
+	activate Server
+	ServerSocket -> OS1 : reserve ""WELL_KNOWN_PORT""
+	alt#Gold #LightGreen ""WELL_KNOWN_PORT"" is available on OS1
+		Server <- - ServerSocket : returns ""void""
+	else #Pink ""WELL_KNOWN_PORT"" is busy on OS1
+		Server <- - ServerSocket : throws ""BindException""
+	end
+	deactivate Server
+
+	Server -> ServerSocket: ""accept()""
+	activate Server
+	ServerSocket -> OS1 : listen for connections on ""WELL_KNOWN_PORT""
+	
+	create boundary Socket2
+	
+	OS1 -> Socket2: creation
+
+end box
+
+box "Host 2"
+
+	participant OS2
+	control Client
+
+	== client connecting ==
+
+	OS2 <- Client : ""new Socket()""
+	activate Client
+
+	create boundary Socket1
+	OS2 -> Socket1 : creation
+	Socket1 - -> Client : return reference to caller
+	deactivate Client
+
+	Socket1 <- Client : ""connect("Host 1", WELL_KNOWN_PORT)""
+	activate Client
+	Socket1 -> OS2 : connection request for ""Host 1""
+
+	OS2 -> OS1 : connection request from ""Host 2""
+
+	alt#Gold #LightGreen ""Host 1"" is reachable on the network & there exists a process on it listening on ""WELL_KNOWN_PORT""
+
+		OS1 - -> OS2 : connection established with ""Host 2""
+
+		OS2 - -> Socket1 : connection established with ""Host 1""
+
+		Socket1 - -> Client : returns ""void""
+
+		note right of Client: Client is connected now,\nand ready to interact
+		
+	else #Pink Cannot contact host within timeout
+
+		OS2 - -> Socket1 : cannot contact ""Host 1""
+
+		Socket1 - -> Client : throws ""SocketTimeoutException""
+		
+
+	else #LightGray ""Host 1"" is reachable on the network BUT it has no service listening on ""WELL_KNOWN_PORT""
+
+		OS1 - -> OS2 : connection refused
+
+		OS2 - -> Socket1 : connection refused from ""Host 1""
+
+		Socket1 - -> Client : throws ""IOException""
+
+	end
+	deactivate Client
+
+end box
+
+== in the meanwhile on the server side ==
+
+	alt#Gold #LightGreen ""Host 1"" is reachable on the network & there exists a process on it listening on ""WELL_KNOWN_PORT""
+
+	OS1 -> Socket2 : bind to ephemeral port\nconnect to Socket1
+
+	Socket2 - -> Server : return reference to caller of //accept()//
+	deactivate Server
+
+	note left of Server : Server is connected now,\nand ready to interact
+
+end
+@enduml
+
+@startuml
+skinparam BoxPadding 10
+
+box "Host 1" #LightBlue
+	control Server
+	participant OS1 
+
+== server listening ==
+
+	Server -> OS1 :  ""new ServerSocket()""
+	activate Server
+
+	create boundary ServerSocket
+	OS1 -> ServerSocket : creation
+	Server <- - ServerSocket : return reference to caller
+	deactivate Server
+
+	Server -> ServerSocket : ""bind(WELL_KNOWN_PORT)""
+	activate Server
+	ServerSocket -> OS1 : reserve ""WELL_KNOWN_PORT""
+	alt#Gold #LightGreen ""WELL_KNOWN_PORT"" is available on OS1
+		Server <- - ServerSocket : returns ""void""
+	else #Pink ""WELL_KNOWN_PORT"" is busy on OS1
+		Server <- - ServerSocket : throws ""BindException""
+	end
+	deactivate Server
+
+	Server -> ServerSocket: ""accept()""
+	activate Server
+	ServerSocket -> OS1 : listen for connections on ""WELL_KNOWN_PORT""
+	
+	create boundary Socket2
+	
+	OS1 -> Socket2: creation
+
+end box
+
+box "Host 2"
+
+	participant OS2
+	control Client
+
+	== client connecting ==
+
+	OS2 <- Client : ""new Socket()""
+	activate Client
+
+	create boundary Socket1
+	OS2 -> Socket1 : creation
+	Socket1 - -> Client : return reference to caller
+	deactivate Client
+
+	Socket1 <- Client : ""connect("Host 1", WELL_KNOWN_PORT)""
+	activate Client
+	Socket1 -> OS2 : connection request for ""Host 1""
+
+	OS2 -> OS1 : connection request from ""Host 2""
+
+	alt#Gold #LightGreen ""Host 1"" is reachable on the network & there exists a process on it listening on ""WELL_KNOWN_PORT""
+
+		OS1 - -> OS2 : connection established with ""Host 2""
+
+		OS2 - -> Socket1 : connection established with ""Host 1""
+
+		Socket1 - -> Client : returns ""void""
+
+		note right of Client: Client is connected now,\nand ready to interact
+		
+	else #Pink Cannot contact host within timeout
+
+		OS2 - -> Socket1 : cannot contact ""Host 1""
+
+		Socket1 - -> Client : throws ""SocketTimeoutException""
+		
+
+	else #LightGray ""Host 1"" is reachable on the network BUT it has no service listening on ""WELL_KNOWN_PORT""
+
+		OS1 - -> OS2 : connection refused
+
+		OS2 - -> Socket1 : connection refused from ""Host 1""
+
+		Socket1 - -> Client : throws ""IOException""
+
+	end
+	deactivate Client
+
+end box
+
+== in the meanwhile on the server side ==
+
+	alt#Gold #LightGreen ""Host 1"" is reachable on the network & there exists a process on it listening on ""WELL_KNOWN_PORT""
+
+	OS1 -> Socket2 : bind to ephemeral port\nconnect to Socket1
+
+	Socket2 - -> Server : return reference to caller of //accept()//
+	deactivate Server
+
+	note left of Server : Server is connected now,\nand ready to interact
+
+end
+@enduml
+
+PlantUML version 1.2021.12(Tue Oct 05 16:01:58 UTC 2021)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>

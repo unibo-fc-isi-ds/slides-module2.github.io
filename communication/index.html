@@ -1,0 +1,1838 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+<title>[DS] Communication Mechanisms</title>
+<meta name="description" content="Communication Mechanisms for Distributed Systems">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><link rel="stylesheet" href="/slides-module2.github.io/reveal-js/dist/reset.css">
+<link rel="stylesheet" href="/slides-module2.github.io/reveal-js/dist/reveal.css">
+  <link rel="stylesheet" href="/slides-module2.github.io/css/custom-theme.min.e415e19db372f1135499fc2ea3a836cea3f048a00982e05f2d60d127261af094.css" id="theme"><link rel="stylesheet" href="/slides-module2.github.io/highlight-js/solarized-dark.min.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto Mono" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Oxygen Mono" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/gh/DanySK/css-blur-animation/blur.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://kit.fontawesome.com/81ac037be0.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+<script src="https://unibo-fc-isi-ds/slides-module2.github.io//plantuml.js"></script>
+
+  </head>
+  <body>
+    
+    <div class="reveal">
+      <div class="slides">
+  
+
+    <section><h1 id="communication-mechanisms-for-distributed-systems">Communication Mechanisms for Distributed Systems</h1>
+<br>
+<h2 id="hahahugoshortcode1s0hbhb">Distributes Systems — Module 2</h2>
+<h3 id="hahahugoshortcode1s1hbhb">A.Y. 2024/2025</h3>
+<h3 id="hahahugoshortcode1s2hbhb"><a href="mailto:giovanni.ciatto@unibo.it">Giovanni Ciatto</a></h3>
+<br>
+<br>
+<p>Compiled on: 2024-10-25
+ — <a href="?print-pdf&amp;pdfSeparateFragments=false"><i class="fa fa-print" aria-hidden="true"></i> printable version</a></p>
+<p><a href="../#/toc"><i class="fa fa-undo" aria-hidden="true"></i> back to ToC</a></p>
+</section><section>
+<h2 id="context">Context</h2>
+<ul>
+<li>
+<p>Distributes systems requires distributed nodes to <em>communicate</em> over the <em>network</em></p>
+</li>
+<li>
+<p>So far, we described communication as <em>“sending messages”</em> between nodes…</p>
+</li>
+<li>
+<p>… but how exactly do we <em>send</em> and <em>receive</em> messages?</p>
+</li>
+<li>
+<p>Okay, we know from our <em>networking</em> course that <strong>network protocols</strong> are the answer…</p>
+<ul>
+<li>e.g. <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> and <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a></li>
+</ul>
+</li>
+<li>
+<p>But how do we <strong>use</strong> these protocols in our programs, <em>in practice</em>?</p>
+</li>
+</ul>
+</section><section>
+<h2 id="sockets">Sockets</h2>
+<ul>
+<li>
+<p>Most OS support the <a href="https://en.wikipedia.org/wiki/Berkeley_sockets">Berkeley <strong>sockets</strong></a> API…</p>
+</li>
+<li>
+<p>… and virtually all programming languages provide a <em>wrapper</em> around this API</p>
+<ul>
+<li>there including Python, via the <a href="https://docs.python.org/3/library/socket.html"><code>socket</code> module</a></li>
+</ul>
+</li>
+<li>
+<p>Sockets are:</p>
+<ul>
+<li>an <em>ancient</em>, and <em>stable</em> <strong>API</strong> for low-level networking in TCP/UDP (and more)</li>
+<li>very <em>didactic</em>: they support very common communication mechanism, which you may find in many other technologies too
+<ul>
+<li>e.g. <strong>connection-less</strong> vs. <strong>connection-oriented</strong> communication</li>
+<li>e.g. <strong>message-based</strong> vs. <strong>stream-based</strong> communication</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>very <em>elementary</em>: higher-level communication abstractions can be <strong>built on top</strong> of them
+<ul>
+<li>e.g. RPC, <em>HTTP</em>, and virtually any application-level protocol</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="definition">Definition</h2>
+<blockquote>
+<p>A <strong>socket</strong> is an abstract representation for the <em>local</em> endpoint of a network communication path.</p>
+</blockquote>
+
+
+
+
+
+<img src="./sockets.svg" alt="Concept of a socket" style="height: 50vh; max-width: 95vw; max-height: 80vh; object-fit: contain;">
+
+<h3 id="interpretation">Interpretation</h3>
+<p>A <em>process</em>’s gateway towards the network, providing a <strong>full-duplex</strong>,
+<strong>multiplexable</strong>, <em>point-to-point</em> or <em>point-to-<em>multi</em>-point</em> <strong>communication</strong> means towards other
+processes, <em>distributed</em> over the network</p>
+<p>(see next slide)</p>
+</section><section>
+<ul>
+<li>
+<p><strong>distributed processes</strong>: sockets aims at letting processes communicate, so</p>
+<ul>
+<li>multiple processes on the same machine may communicate via sockets too</li>
+<li>the same socket on the same machine may be shared among threads</li>
+</ul>
+</li>
+<li>
+<p><strong>communication</strong>: information exchange is explicit</p>
+<ul>
+<li>data is <em>sent/received</em> via ad-hoc socket methods</li>
+</ul>
+</li>
+<li>
+<p><strong>point-to-point</strong>: each socket mediates the interaction among <em>two (and only two)</em> processes</p>
+<ul>
+<li>as opposed to <strong>point-to-<em>multi</em>point</strong> communication, a socket may communicate with multiple other processes</li>
+</ul>
+</li>
+<li>
+<p><strong>multiplexable</strong>: multiple independent sockets may be created, on different ports</p>
+<ul>
+<li>ports are positive 2-bytes integers in the range from $1$ to $2^{16} - 1$,</li>
+<li>the $1\ldots1023$ range is reserved for well-known protocols</li>
+<li>ports in the rage $1024\ldots2^{16} - 1$ are for custom usage</li>
+</ul>
+</li>
+<li>
+<p><strong>full-duplex</strong>: exchanged data may flow in both verses, simultaneously</p>
+<ul>
+<li>i.e. the receiver may send data while receiving</li>
+<li>i.e. the sender may receive data while sending</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="two-types-of-sockets">Two types of sockets</h2>
+<ul>
+<li>
+<p><strong>stream sockets</strong> allowing the exchange of possibly unlimited <em>streams</em> of bytes</p>
+<ul>
+<li>commonly based on TCP</li>
+<li>commonly operating in a <em>connection</em>-oriented way</li>
+</ul>
+</li>
+<li>
+<p><strong>datagram sockets</strong> allowing the exchange of finite-sized <em>packets</em> of bytes</p>
+<ul>
+<li>commonly based on UDP</li>
+<li>commonly operating in a <em>connectionless</em> way</li>
+</ul>
+</li>
+<li>
+<p>both packets and streams are <em>byte-oriented</em> communication means</p>
+<ul>
+<li>i.e. the <em>unit</em> of communication is the <em>byte</em></li>
+</ul>
+</li>
+<li>
+<p>sockets do not care about the <em>content</em> of the exchanged data</p>
+<ul>
+<li>i.e. it is up to the <em>application</em> to interpret the bytes</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="some-jargon">Some jargon</h2>
+<ul>
+<li>
+<p>Client vs. Server</p>
+<ul>
+<li><em>client</em> socket: the socket initiating the communication</li>
+<li><em>server</em> socket: the socket accepting the communication</li>
+</ul>
+</li>
+<li>
+<p>Local vs. Remote</p>
+<ul>
+<li><em>local</em> socket: the socket on the <em>local</em> machine</li>
+<li><em>remote</em> socket: the socket on the <em>remote</em> machine</li>
+<li>in the eyes of the <em>client</em> socket, the server socket is <em>remote</em>, and vice-versa</li>
+</ul>
+</li>
+<li>
+<p>Address and Port</p>
+<ul>
+<li>the <em>address</em> is the IP address of the machine
+<ul>
+<li>recall that a machine may have <em>multiple</em> IP addresses, one per <em>network interface</em></li>
+</ul>
+</li>
+<li>the <em>port</em> is the port number of the socket</li>
+<li>the <em>address:port</em> pair is the <em>endpoint</em> of the communication path</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="useful-resources">Useful resources</h2>
+<ul>
+<li><a href="https://docs.python.org/3/library/socket.html">Python <code>socket</code> module</a></li>
+<li><a href="https://realpython.com/python-sockets/">Socket Programming in Python (Guide)</a></li>
+</ul>
+</section><section>
+
+
+<section data-shortcode-section="">
+<h2 id="datagram-sockets">Datagram sockets</h2>
+<img src="./udp-sockets.svg" alt="Datagram sockets representation" style="height: 50vh; max-width: 95vw; max-height: 80vh; object-fit: contain;">
+<ul>
+<li>Datagram sockets aim at exchanging <em>packets</em> of bytes, called <em>datagrams</em>, among <em>endpoints</em>
+<ul>
+<li><strong>datagram</strong> $\approx$ self-contained packet of a given size
+<ul>
+<li>in <strong>UDP</strong> the upper-bound is <em>64 KiB</em>, i.e. $(2^{16} - 1)$ bytes of <em>maximum datagram size</em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>No</strong> <em>connection</em> is established between the endpoints
+<ul>
+<li>each datagram send/receive is <em>independent</em> from the others</li>
+</ul>
+</li>
+<li>There is no difference among client and server sockets
+<ul>
+<li>each datagram socket may act as a <em>client</em> or a <em>server</em> in any moment</li>
+</ul>
+</li>
+<li>Each datagram is <em>self-contained</em> can be used to communicate with <strong>many</strong> other sockets
+<ul>
+<li>the <em>address:port</em> pair is specified upon sending <em>each</em> datagram</li>
+<li>$\Rightarrow$ support for <em>broadcast</em> and <em>multicast</em> communication</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h3 id="datagram-sockets-in-python-pt-1">Datagram sockets in Python (pt. 1)</h3>
+<ol>
+<li>
+<p>Python provides a <code>socket</code> <em>module</em>, with a <code>socket</code> <em>class</em></p>
+<ul>
+<li>use the <em>constructor</em> to create a new socket</li>
+<li>the <code>socket</code> class provides methods for <em>sending</em> and <em>receiving</em> datagrams</li>
+</ul>
+</li>
+<li>
+<p>Example of socket <em>creation</em>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">socket</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># create a new datagram socket</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">socket</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">AF_INET</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SOCK_DGRAM</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div><ul>
+<li><code>AF_INET</code> specifies the <em>address family</em> (IPv4)</li>
+<li><code>SOCK_DGRAM</code> specifies the <em>socket type</em> (datagram)</li>
+</ul>
+</li>
+<li>
+<p><em>Before</em> being used, the socket must be <em>bound</em> to a local <em>address</em> and <em>port</em> (in order to <em>receive</em> datagrams)</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># bind the socket to the local address and port</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bind</span><span style="color:#000;font-weight:bold">((</span><span style="color:#4e9a06">'W.X.Y.Z'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">12345</span><span style="color:#000;font-weight:bold">))</span>
+</span></span></code></pre></div><ul>
+<li><strong>binding</strong> $\approx$ associating the socket to a local address and port, so that the OS knows where to deliver incoming datagrams</li>
+<li>class <code>socket</code> provides the <code>bind</code> method which accept a <em>single</em> argument, which must be a <em>tuple of two</em> elements, represening one <em>endpoint</em>
+<ul>
+<li>the $1^{st}$ element is the <em>address string</em> (use <code>'0.0.0.0'</code> to bind to <em>all</em> local addresses)</li>
+<li>the $2^{nd}$ element is the <em>port number</em> (use <code>0</code> to let the OS choose a free port)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h3 id="datagram-sockets-in-python-pt-2">Datagram sockets in Python (pt. 2)</h3>
+<ol start="4">
+<li>
+<p>Example of datagram <strong>send</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">payload</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#4e9a06">'Hello, world!'</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">recipient</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'A.B.C.D'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">54321</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendto</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">payload</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">encode</span><span style="color:#000;font-weight:bold">(),</span> <span style="color:#000">recipient</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div><ul>
+<li><code>sendto</code> method sends a <em>datagram</em> to a <em>remote recipient</em></li>
+<li>the $1^{st}$ argument is the <em>byte sequence</em> to be sent</li>
+<li>the $2^{nd}$ argument is the recipient endpoint (as a <em>tuple</em>)</li>
+<li>documentation: <a href="https://docs.python.org/3/library/socket.html#socket.socket.sendto">socket.sendto</a></li>
+</ul>
+</li>
+<li>
+<p>Example of datagram <strong>receive</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">data</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">sender</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recvfrom</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">bufsize</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#0000cf;font-weight:bold">4096</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">data</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">data</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">decode</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">'Received: "</span><span style="color:#4e9a06">{</span><span style="color:#000">data</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">" from "</span><span style="color:#4e9a06">{</span><span style="color:#000">sender</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div><ul>
+<li><code>recvfrom</code> method receives a <em>datagram</em> from a <em>remote sender</em></li>
+<li>the $1^{st}$ is the <em>buffer size</em>, according to doc: <em>“a relatively small power of 2”</em>, e.g. 4096</li>
+<li>the method returns a <em>tuple</em> with the <em>received data</em> and the <em>sender endpoint</em>
+<ul>
+<li>the <em>received data</em> is a <em>byte sequence</em></li>
+</ul>
+</li>
+<li>documentation: <a href="https://docs.python.org/3/library/socket.html#socket.socket.recvfrom">socket.recvfrom</a></li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h3 id="datagram-sockets-in-python-pt-3">Datagram sockets in Python (pt. 3)</h3>
+<ol start="6">
+<li>
+<p>about <em>encoding</em> and <em>decoding</em>:</p>
+<ul>
+<li>sockets send and receive <em>byte sequences</em> (type <code>byte</code>), not <em>strings</em> (type <code>str</code>)</li>
+<li>byte sequences <em>literals</em> can be created via the <code>b</code> prefix, e.g. <code>b'Hello, world!'</code></li>
+<li>the <code>encode</code> and <code>decode</code> methods are used to convert between <em>byte sequences</em> and <em>strings</em>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">data</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#4e9a06">b</span><span style="color:#4e9a06">'Hello, world'</span> <span style="color:#8f5902;font-style:italic"># alternatively data = 'Hello, world'.encode()</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">data</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">data</span> <span style="color:#ce5c00;font-weight:bold">+</span> <span style="color:#204a87">bytes</span><span style="color:#000;font-weight:bold">([</span><span style="color:#0000cf;font-weight:bold">33</span><span style="color:#000;font-weight:bold">])</span> <span style="color:#8f5902;font-style:italic"># append byte 33, corresponding to '!'</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">data</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">data</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">decode</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># convert to string</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">data</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># prints 'Hello, world!'</span>
+</span></span></code></pre></div></li>
+<li>default encoding is <a href="https://en.wikipedia.org/wiki/UTF-8">UTF-8</a>, but other encodings are possible</li>
+<li>the <em>encoding</em> and <em>decoding</em> must be <em>consistent</em> among the sender and the receiver</li>
+</ul>
+</li>
+<li>
+<p>the socket must be <em>closed</em> when no longer needed</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">try</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendto</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">...</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recvfrom</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">...</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">OSError</span> <span style="color:#204a87;font-weight:bold">as</span> <span style="color:#000">e</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">'Any subseqent send/receive will raise: </span><span style="color:#4e9a06">{</span><span style="color:#000">e</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+</ol>
+
+</section>
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="example-udp-chat">
+<h2 id="example-udp-group-chat">Example: UDP Group Chat</h2>
+<ul>
+<li>
+<p>Let’s implement a simple <strong>group chat</strong> application using <em>datagram sockets</em></p>
+</li>
+<li>
+<p><strong>Peer-to-peer</strong> communication: each participant sends messages to <em>all</em> the others</p>
+</li>
+<li>
+<p>Each participant is <strong>identified</strong> by a <em>nickname</em> and/or an <em>endpoint</em></p>
+</li>
+<li>
+<p>Each <strong>message</strong> contains</p>
+<ol>
+<li>the <em>nickname</em> of the <em>sender</em></li>
+<li>the <em>text</em> of the message</li>
+<li>the <em>timestamp</em> of the message</li>
+</ol>
+</li>
+<li>
+<p><strong>Command-line</strong> UI: each participant can type messages to send, and see incoming messages in the <em>console</em></p>
+</li>
+<li>
+<p>See <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/">https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/</a></p>
+</li>
+</ul>
+</section><section>
+<h2 id="example-udp-group-chat-1">Example: UDP Group Chat</h2>
+<h3 id="utilitieshttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab2__init__py-pt-1"><a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/__init__.py">Utilities</a> (pt. 1)</h3>
+<ol>
+<li>
+<p>A function to <em>parse</em> the <em>address</em> and <em>port</em> from a string, or validate an <em>address</em> and <em>port</em> pair:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">ip</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#4e9a06">'0.0.0.0:0'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">port</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">ip</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">ip</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">strip</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#4e9a06">':'</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">ip</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">ip</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">p</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">ip</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">split</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">':'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">p</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">int</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">p</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">port</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">port</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#000">p</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">port</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">port</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">port</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#204a87">range</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">65536</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#4e9a06">"Port number must be in the range 0-65535"</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#204a87">isinstance</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">ip</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87">str</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#4e9a06">"IP address must be a string"</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ip</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">port</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">## Usage</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'localhost:8080'</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'localhost'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">8080</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'127.0.0.1'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">8080</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'127.0.0.1'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">8080</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">port</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#0000cf;font-weight:bold">8080</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'0.0.0.0'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">8080</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+<li>
+<p>A function to compose <em>messages</em> into <em>strings</em>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">from</span> <span style="color:#000">datetime</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">datetime</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">message</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">text</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">str</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">sender</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">str</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">timestamp</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">datetime</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">timestamp</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">timestamp</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">datetime</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">now</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#4e9a06">f</span><span style="color:#4e9a06">"[</span><span style="color:#4e9a06">{</span><span style="color:#000">timestamp</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">isoformat</span><span style="color:#000;font-weight:bold">()</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">] </span><span style="color:#4e9a06">{</span><span style="color:#000">sender</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">:</span><span style="color:#4e9a06">\n\t</span><span style="color:#4e9a06">{</span><span style="color:#000">text</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">## Usage</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">assert</span> <span style="color:#000">message</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"Hello, World!"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">"Alice"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">datetime</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">2024</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">3</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">12</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">15</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#4e9a06">"[2024-02-03T12:15:00] Alice:</span><span style="color:#4e9a06">\n\t</span><span style="color:#4e9a06">Hello, World!"</span>
+</span></span></code></pre></div></li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-2">Example: UDP Group Chat</h2>
+<h3 id="utilitieshttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab2__init__py-pt-2"><a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/__init__.py">Utilities</a> (pt. 2)</h3>
+<ol start="3">
+<li>
+<p>A function to get <em>all</em> the <em>IP addresses</em> of the current machine:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">psutil</span><span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">socket</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">local_ips</span><span style="color:#000;font-weight:bold">():</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">interface</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">psutil</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">net_if_addrs</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">values</span><span style="color:#000;font-weight:bold">():</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">addr</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">interface</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">addr</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">family</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">AF_INET</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#204a87;font-weight:bold">yield</span> <span style="color:#000">addr</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">address</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">## Usage</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Local IPs: </span><span style="color:#4e9a06">{</span><span style="color:#204a87">list</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">local_ips</span><span style="color:#000;font-weight:bold">())</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># Local IPs: ['127.0.0.1', '137.204.71.x', ...]</span>
+</span></span></code></pre></div><ul>
+<li>the <code>psutil</code> module is not Python standard library, but it is available <a href="https://pypi.org/project/psutil/">on PyPI</a></li>
+</ul>
+</li>
+</ol>
+<br>
+<p>Recall that:</p>
+<ul>
+<li>each OS may have <em>multiple</em> <strong>network interfaces</strong></li>
+<li>each network interface may have <em>multiple</em> <strong>IP addresses</strong></li>
+<li><code>127.0.0.1</code> a.k.a. <code>localhost</code> is the <em>loopback</em> address, i.e. the address of the <em>local</em> machine</li>
+<li>if the machine is connected to UniBO network, the <em>local</em> IP address may start with <code>137.204.x.y</code></li>
+</ul>
+</section><section>
+<h2 id="example-udp-group-chat-3">Example: UDP Group Chat</h2>
+<h3 id="defining-a-class-for-participants">Defining a class for participants</h3>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col col-8" style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">Peer</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Initialises the peer, reserving the port and adding the peers (if any)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">port</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">int</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">peers</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">peers</span> <span style="color:#204a87;font-weight:bold">is</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">peers</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">set</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">peers</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">peer</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">peer</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">peers</span><span style="color:#000;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__socket</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">socket</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">AF_INET</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SOCK_DGRAM</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bind</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">port</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">port</span><span style="color:#000;font-weight:bold">))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#5c35cc;font-weight:bold">@property</span> <span style="color:#8f5902;font-style:italic"># Read-only property to get the local endpoint (ip:port)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">local_address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">getsockname</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Sends a message to all the peers</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">send_all</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">message</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">str</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#204a87">isinstance</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87">bytes</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">message</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">message</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">encode</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">peer</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">peers</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendto</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">peer</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Receives a message from a peer (BLOCKING), keeping track of the peer if new</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">receive</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">address</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recvfrom</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">1024</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">peers</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">add</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">message</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">decode</span><span style="color:#000;font-weight:bold">(),</span> <span style="color:#000">address</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Closes the socket (releasing the port)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">close</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span>
+</span></span></code></pre></div></div>
+<div class="col " style="text-align: left;"><figure id="plantuml-figure-1729866388815083841" class="plantuml" alt="" style="width: 100%;height: 30vh;max-width: 95vw;max-height: 80vh;">
+<p>class Peer {
+- __socket: socket
++ peers: set
++ local_address: tuple
+..
++ __init__(port: int, peers=None)
+..
++ send_all(message: str)
++ receive(): tuple
++ close()
+}</p>
+</figure>
+<script>
+    handlePlantumlFigureByID("plantuml-figure-1729866388815083841");
+</script>
+</div>
+</div>
+</div>
+<ul>
+<li>The <code>Peer</code> class encapsulates the <em>socket</em> and the <em>peers</em> of a participant</li>
+<li>Socket is <em>created</em> behind the scenes, and bound to the <em>port</em> specified by construction</li>
+<li>1 participant $\leftrightarrow$ 1 peer</li>
+</ul>
+</section><section>
+<h2 id="example-udp-group-chat-4">Example: UDP Group Chat</h2>
+<h3 id="attempt-1----example1_udp_chat_wronghttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab2example1_udp_chat_wrongpy">Attempt 1 – <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/example1_udp_chat_wrong.py"><code>example1_udp_chat_wrong</code></a></h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">peer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Peer</span><span style="color:#000;font-weight:bold">(</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">port</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">int</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">]),</span> <span style="color:#8f5902;font-style:italic"># port number from first command-line argument</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">peers</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">[</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">peer</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">peer</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">:]]</span> <span style="color:#8f5902;font-style:italic"># any other command-line argument is "ip:port"</span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">'Bound to: </span><span style="color:#4e9a06">{</span><span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">local_address</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">'Local IP addresses: </span><span style="color:#4e9a06">{</span><span style="color:#204a87">list</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">local_ips</span><span style="color:#000;font-weight:bold">())</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">content</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">input</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'&gt; '</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">send_all</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">content</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">username</span><span style="color:#000;font-weight:bold">))</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">receive</span><span style="color:#000;font-weight:bold">()[</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">])</span>
+</span></span></code></pre></div><ol>
+<li>
+<p>Try to run one peer with <code>poetry run python -m snippets -l 2 -e 1 PORT_A</code></p>
+<ul>
+<li>choose a <em>port</em> number, e.g. <code>8080</code></li>
+<li>give it <em>your name</em>, say <code>Alice</code></li>
+</ul>
+</li>
+<li>
+<p>Try to run another peer with <code>poetry run python -m snippets -l 2 -e 1 PORT_B IP_A:PORT_A</code></p>
+<ul>
+<li>choose <strong>another</strong> <em>port</em> number, e.g. <code>8081</code></li>
+<li>report the IP and port of the first peer (look at its logs)</li>
+<li>give it <em>another name</em>, say <code>Bob</code></li>
+</ul>
+</li>
+<li>
+<p>Make them chat!</p>
+</li>
+<li>
+<p>[Optional] If you want to add one more peer, repeat step 2 with a new port number:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span>poetry run python -m snippets -l <span style="color:#0000cf;font-weight:bold">2</span> -e <span style="color:#0000cf;font-weight:bold">1</span> PORT_C IP_A:PORT_A IP_B:PORT_B
+</span></span></code></pre></div></li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-5">Example: UDP Group Chat</h2>
+<h3 id="attempt-1----example-logs">Attempt 1 – Example logs</h3>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><h4 id="peer-1">Peer 1</h4>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span>Bound to: ('0.0.0.0', 8080)
+</span></span><span style="display:flex;"><span>Local IP addresses: ['127.0.0.1', '137.204.x.y', ...]
+</span></span><span style="display:flex;"><span>Enter your username to start the chat:
+</span></span><span style="display:flex;"><span>Alice
+</span></span><span style="display:flex;"><span>&gt; Is there anybody?
+</span></span><span style="display:flex;"><span>[2024-10-03T15:00:22.175104] Bob:
+</span></span><span style="display:flex;"><span>        Hello Alice!
+</span></span><span style="display:flex;"><span>&gt; Hello Bob, how are you?
+</span></span><span style="display:flex;"><span>[2024-10-03T15:01:09.164902] Bob:
+</span></span><span style="display:flex;"><span>        Fine thanks! What about you?
+</span></span><span style="display:flex;"><span>&gt;
+</span></span></code></pre></div><p>Alice’s terminal is waiting for inputs</p>
+</div>
+<div class="col " style="text-align: left;"><h4 id="peer-2">Peer 2</h4>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span>Bound to: ('0.0.0.0', 8081)
+</span></span><span style="display:flex;"><span>Local IP addresses: ['127.0.0.1', '137.204.x.y']
+</span></span><span style="display:flex;"><span>Enter your username to start the chat:
+</span></span><span style="display:flex;"><span>Bob
+</span></span><span style="display:flex;"><span>&gt; Hello Alice!
+</span></span><span style="display:flex;"><span>[2024-10-03T15:00:52.531766] Alice:
+</span></span><span style="display:flex;"><span>        Hello Bob, how are you?
+</span></span><span style="display:flex;"><span>&gt; Fine thanks! What about you?
+</span></span></code></pre></div><p>Bob’s terminal is waiting for remote messages</p>
+</div>
+</div>
+</div>
+</section><section>
+<h2 id="example-udp-group-chat-6">Example: UDP Group Chat</h2>
+<h3 id="attempt-1----issues">Attempt 1 – Issues</h3>
+<ol>
+<li>
+<p>Input operations tend to <em>block</em> the current (and only) <strong>thread of execution</strong></p>
+<ul>
+<li>
+<p><strong>blocking</strong> <code>receive</code>: receiving a message is a blocking operation</p>
+<ul>
+<li>the peer is <em>stuck</em> waiting for a message, and cannot send messages, nor gather local user’s inputs</li>
+</ul>
+</li>
+<li>
+<p><strong>blocking</strong> <code>input</code>: gathering user’s input is a blocking operation too</p>
+<ul>
+<li>the peer is <em>stuck</em> waiting for the user to type a message, and cannot receive messages</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Participants are <strong>peers</strong> at runtime, but initially one acts as a <strong>client</strong> and the other as a <strong>server</strong></p>
+<ul>
+<li>the <strong>client</strong> must know the <strong>server</strong>’s address, but the <strong>server</strong>’s address is not known in advance
+<ul>
+<li>$\Rightarrow$ the $1^{st}$ participant cannot initiate the conversation</li>
+<li>$\Rightarrow$ the $2^{st}$ participant must know the $1^{st}$ participant’s address</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Lack of <strong>graceful</strong> termination</p>
+<ul>
+<li>locally, the only way out is to <em>forcefully terminate</em> the program (e.g. with <code>Ctrl+C</code>)</li>
+<li>the remote peer is <em>not notified</em> of the termination</li>
+</ul>
+</li>
+<li>
+<p>Lack of <strong>authentication</strong></p>
+<ul>
+<li>peers are assumed to <em>declare</em> their own identity in an honest way
+<ul>
+<li>by including it in the payload of the messages</li>
+</ul>
+</li>
+<li>the <em>identity</em> is not <em>verified</em> in any
+<ul>
+<li>e.g. no check that the <em>username</em> is unique, or that the <em>address</em> corresponds to the <em>username</em></li>
+<li>malicious peers may <em>impersonate</em> other peers</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>UDP is <strong>unreliable</strong>: messages may get <em>lost</em>, <em>delayed</em>, delivered <em>out of order</em>, or <em>duplicated</em></p>
+<ul>
+<li>our code does not handle these cases at all</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-7">Example: UDP Group Chat</h2>
+<h3 id="attempt-1----possible-improvements">Attempt 1 – Possible Improvements</h3>
+<ol>
+<li>
+<p>Input operations tend to <em>block</em> the current (and only) <strong>thread of execution</strong></p>
+<ul>
+<li>solution: use <strong>multiple threads</strong> to handle <em>input</em> (1 per input source + another)</li>
+</ul>
+</li>
+<li>
+<p>Participants are <strong>peers</strong> at runtime, but initially one acts as a <strong>client</strong> and the other as a <strong>server</strong></p>
+<ul>
+<li>have a central server acting as a <strong>broker</strong> for the participants</li>
+</ul>
+</li>
+<li>
+<p>Lack of <strong>graceful</strong> termination</p>
+<ol>
+<li>catch the closure of the terminal</li>
+<li>send a <em>termination message</em> to the other peers</li>
+<li>close the socket and exit</li>
+</ol>
+<ul>
+<li>upon receiving a <em>termination message</em>, do something
+<ul>
+<li>e.g. print a <em>farewell</em> message for the leaving peer</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Lack of <strong>authentication</strong></p>
+<ul>
+<li>public-key cryptography (out of scope in this course)</li>
+<li>central server supporting some sort of <em>authentication</em> protocol</li>
+</ul>
+</li>
+<li>
+<p>UDP is <strong>unreliable</strong>: messages may get <em>lost</em>, <em>delayed</em>, delivered <em>out of order</em>, or <em>duplicated</em></p>
+<ul>
+<li>implement retry mechanisms, or use a reliable protocols (e.g. TCP)</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-8">Example: UDP Group Chat</h2>
+<h3 id="attempt-2----example2_udp_chathttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab2example2_udp_chatpy-pt-1">Attempt 2 – <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/example2_udp_chat.py"><code>example2_udp_chat</code></a> (pt. 1)</h3>
+<ol>
+<li>
+<p>Let’s address the <em>blocking</em> issue by using <em>threads</em> to handle <em>input</em> and <em>reception</em>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">threading</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">AsyncPeer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">Peer</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Creates a new asynchoronous peer, with a callback for incoming messages</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">port</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">peers</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">callback</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">super</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__init__</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">port</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">peers</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__receiver_thread</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">threading</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">Thread</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">target</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__handle_incoming_messages</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">daemon</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__callback</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">callback</span> <span style="color:#204a87;font-weight:bold">or</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">lambda</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">_</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87;font-weight:bold">None</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># callback does nothing by default</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__receiver_thread</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">start</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># This private method is executed in a separate thread, i.e. in background</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__handle_incoming_messages</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">address</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">receive</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">on_message_received</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># Callback being invoked when a message is received</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">on_message_received</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">sender</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">__callback</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">sender</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+<li>
+<p><code>AsyncPeer</code> is a subclass of <code>Peer</code> exposing a <code>callback</code> for <strong>asynchronously</strong> handling <em>incoming</em> messages</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">## Usage</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">AsyncPeer</span><span style="color:#000;font-weight:bold">(</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">port</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#ce5c00;font-weight:bold">...</span><span style="color:#000;font-weight:bold">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">peers</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#ce5c00;font-weight:bold">...</span> <span style="color:#000;font-weight:bold">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">callback</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">lambda</span> <span style="color:#000">msg</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">snd</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># handle incoming messages here</span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+</ol>
+</section><section>
+<blockquote>
+<p>Important notion of <a href="https://en.wikipedia.org/wiki/Callback_(computer_programming)">“callback”</a>:
+a function that is stored as data (a reference) and designed to be called by another function – often back to the original abstraction layer.</p>
+</blockquote>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Callback-notitle.svg" alt="A callback is often back on the level of the original caller."></p>
+</section><section>
+<h2 id="example-udp-group-chat-9">Example: UDP Group Chat</h2>
+<h3 id="attempt-2----example2_udp_chathttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab2example2_udp_chatpy-pt-1-1">Attempt 2 – <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/example2_udp_chat.py"><code>example2_udp_chat</code></a> (pt. 1)</h3>
+<ol start="3">
+<li>
+<p>Creating a minimal group chat is now straightforward:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">peer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">AsyncPeer</span><span style="color:#000;font-weight:bold">(</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">port</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">int</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">]),</span> <span style="color:#8f5902;font-style:italic"># port number from first command-line argument</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">peers</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">[</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">peer</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">peer</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">:]],</span> <span style="color:#8f5902;font-style:italic"># any other command-line argument is "ip:port"</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">callback</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">lambda</span> <span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">_</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># print incoming messages on the console</span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">'Bound to: </span><span style="color:#4e9a06">{</span><span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">local_address</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">'Local IP addresses: </span><span style="color:#4e9a06">{</span><span style="color:#204a87">list</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">local_ips</span><span style="color:#000;font-weight:bold">())</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">username</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">input</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'Enter your username to start the chat:</span><span style="color:#4e9a06">\n</span><span style="color:#4e9a06">'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'Type your message and press Enter to send it. Messages from other peers will be displayed below.'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">content</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">input</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">send_all</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">content</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">username</span><span style="color:#000;font-weight:bold">))</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Let’s now try the new version of the chat application</p>
+<ol>
+<li>run the first peer with <code>poetry run python -m snippets -l 2 -e 2 PORT_A</code></li>
+<li>run the second peer with <code>poetry run python -m snippets -l 2 -e 2 PORT_B IP_A:PORT_A</code></li>
+<li>make them chat!</li>
+</ol>
+</li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-10">Example: UDP Group Chat</h2>
+<h3 id="attempt-2----remaining-issues">Attempt 2 – Remaining issues</h3>
+<ol>
+<li>Participants are <strong>peers</strong> at runtime, but initially one acts as a <strong>client</strong> and the other as a <strong>server</strong></li>
+<li>Lack of <strong>graceful</strong> termination
+<ul>
+<li>let’s focus on this one</li>
+</ul>
+</li>
+<li>Lack of <strong>authentication</strong></li>
+<li>UDP is <strong>unreliable</strong>: messages may get <em>lost</em>, <em>delayed</em>, delivered <em>out of order</em>, or <em>duplicated</em></li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-11">Example: UDP Group Chat</h2>
+<h3 id="attempt-3----example4_udp_chat_gracefulhttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab2example4_udp_chat_gracefulpy-pt-1">Attempt 3 – <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/example4_udp_chat_graceful.py"><code>example4_udp_chat_graceful</code></a> (pt. 1)</h3>
+<ol>
+<li>
+<p>Let’s address the <strong>graceful termination</strong> issue by <em>catching exceptions</em> and <em>communicating</em> them accordingly</p>
+</li>
+<li>
+<p>First, let’s create a special kind of message to signal the <em>termination</em> of a peer to other peers.
+Upon receiving this message, a peer should <em>remove</em> the sender from the local list of peers:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">EXIT_MESSAGE</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#4e9a06">"&lt;LEAVES THE CHAT&gt;"</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">AsyncPeer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">Peer</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># other methods are unchanged</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">__handle_incoming_messages</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">address</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">receive</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">message</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">endswith</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">EXIT_MESSAGE</span><span style="color:#000;font-weight:bold">):</span>          <span style="color:#8f5902;font-style:italic"># notice this</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">peers</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">remove</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#3465a4">self</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">on_message_received</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Finally, let’s <em>catch</em> the user trying to terminate one peer, and <em>send</em> the <em>termination message</em> to the other peers:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># initialisation of the program is unchanged</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'Type your message and press Enter to send it. Messages from other peers will be displayed below.'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">try</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">content</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">input</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">send_all</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">content</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">username</span><span style="color:#000;font-weight:bold">))</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">except</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#c00;font-weight:bold">EOFError</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#c00;font-weight:bold">KeyboardInterrupt</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">send_all</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">EXIT_MESSAGE</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">username</span><span style="color:#000;font-weight:bold">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">exit</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># explicit termination of the program with success</span>
+</span></span></code></pre></div><ul>
+<li><code>EOFError</code> is raised when the user <em>closes</em> the terminal’s input stream <em>politely</em> (e.g. via <code>Ctrl+D</code>)</li>
+<li><code>KeyboardInterrupt</code> is raised when the user <em>interrupts</em> the program (e.g. via <code>Ctrl+C</code>)</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-12">Example: UDP Group Chat</h2>
+<h3 id="attempt-3----example4_udp_chat_gracefulhttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab2example4_udp_chat_gracefulpy-pt-2">Attempt 3 – <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/example4_udp_chat_graceful.py"><code>example4_udp_chat_graceful</code></a> (pt. 2)</h3>
+<ol start="4">
+<li>
+<p><strong>Rationale</strong>: no need to terminate the application when one peer leaves the chat</p>
+<ul>
+<li>the chat should continue, and the leaving peer should be <em>forgotten</em></li>
+<li>other peers may <em>join</em> the chat at any time</li>
+</ul>
+</li>
+<li>
+<p>Let’s now try the new version of the chat application</p>
+<ol>
+<li>run the first peer with <code>poetry run python -m snippets -l 2 -e 4 PORT_A</code></li>
+<li>run the second peer with <code>poetry run python -m snippets -l 2 -e 4 PORT_B IP_A:PORT_A</code></li>
+<li>make them chat!</li>
+</ol>
+</li>
+<li>
+<p>What you should observe:</p>
+<ul>
+<li>we still require the second peer to start the conversation</li>
+<li>participants should be able to use the application without seeing <em>exceptions</em> in their terminal</li>
+<li>there could be situations where messages are <em>lost</em> or <em>duplicated</em>
+<ul>
+<li>consider using <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab2/example3_udp_streamer.py"><code>example3_udp_streamer</code></a>
+to stress-test the chat with <em>many</em> messages, and to observe the <em>reliability</em> of the communication protocol</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="example-udp-group-chat-13">Example: UDP Group Chat</h2>
+<h3 id="attempt-2----remaining-issues-1">Attempt 2 – Remaining issues</h3>
+<ol>
+<li>Participants are <strong>peers</strong> at runtime, but initially one acts as a <strong>client</strong> and the other as a <strong>server</strong></li>
+<li>Lack of <strong>authentication</strong></li>
+<li>UDP is <strong>unreliable</strong>: messages may get <em>lost</em>, <em>delayed</em>, delivered <em>out of order</em>, or <em>duplicated</em>
+<ul>
+<li>let’s focus on this one</li>
+</ul>
+</li>
+</ol>
+
+</section>
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="stream-sockets">
+<h2 id="stream-sockets">Stream sockets</h2>
+<img src="./tcp-sockets.svg" alt="Stream sockets representation" style="height: 50vh; max-width: 95vw; max-height: 80vh; object-fit: contain;">
+<ul>
+<li>Stream sockets aim at exchanging <em>streams</em> of bytes among <em>endpoints</em>
+<ul>
+<li><strong>stream</strong> $\approx$ sequence of bytes with <strong>no</strong> <em>length limitation</em>
+<ul>
+<li>thanks to the TCP protocol, the stream is <em>reliable</em> and <em>ordered</em></li>
+<li>the stream is <strong>directed</strong>: either <em>from</em> the client <em>to</em> the server, or vice versa</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>A <strong>connection</strong> must be established between 2 (<em>and only 2</em>) endpoints
+<ul>
+<li>the connection is <em>full-duplex</em>, i.e. data may flow in both verses, simultaneously</li>
+<li>each connection involves <em>2 streams</em></li>
+</ul>
+</li>
+<li>There is a clear distinction among <em>client</em> and <em>server</em> sockets
+<ul>
+<li>the two sorts of sockets have <em>different</em> functionalities and API</li>
+</ul>
+</li>
+<li>Stream sockets <em>only</em> support <strong>one-to-one</strong> communication
+<ul>
+<li>to communicate with multiple peers, multiple connections must be established</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-1">Stream sockets in Python (pt. 1)</h2>
+<ol>
+<li>
+<p>Python’s <code>socket</code> <em>class</em>, from the <code>socket</code> <em>module</em> works for <em>stream</em> sockets too</p>
+<ul>
+<li>simply initialize them with different <em>socket type</em>:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">socket</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">socket</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">AF_INET</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SOCK_STREAM</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># create a new stream socket</span>
+</span></span></code></pre></div><ul>
+<li><code>AF_INET</code> specifies the <em>address family</em> (IPv4)</li>
+<li><code>SOCK_STREAM</code> specifies the <em>socket type</em> (stream)</li>
+</ul>
+</li>
+<li>
+<p>As for <em>datagram</em> sockets, the <em>stream</em> socket must be <em>bound</em> to a local <em>address</em> and <em>port</em> before being used:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bind</span><span style="color:#000;font-weight:bold">((</span><span style="color:#4e9a06">'W.X.Y.Z'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">12345</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#8f5902;font-style:italic"># bind the socket to the local address and port</span>
+</span></span></code></pre></div><ul>
+<li>the <code>bind</code> method is the same as for <em>datagram</em> sockets</li>
+<li>use <code>"0.0.0.0"</code> as the <strong>IP address</strong> to bind to <em>all</em> local addresses</li>
+<li>use <code>0</code> as the <strong>port</strong> to let the OS choose a free port
+<ul>
+<li>this is most commonly what <em>clients</em> do</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-2">Stream sockets in Python (pt. 2)</h2>
+<ol start="3">
+<li>What happens next depends on whether we are on the <em>client</em> or the <em>server</em> side of the connection:</li>
+</ol>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><ul>
+<li>
+<p><strong>Server</strong>:</p>
+<ol>
+<li>actively start <strong>listen</strong>ing for incoming <em>connections</em></li>
+<li>actively wait to <strong>accept</strong> an incoming connection</li>
+<li><strong>send</strong> and <strong>receive</strong> data</li>
+</ol>
+</li>
+<li>
+<p><strong>Client</strong>:</p>
+<ol>
+<li>actively <strong>connect</strong> to a server socket (requires knowing the server’s <em>IP address</em> and <em>port</em>)</li>
+<li><strong>send</strong> and <strong>receive</strong> data</li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="col " style="text-align: left;"><img src="./stream-sockets.avif" alt="Diagram showing the different API of client and server stream sockets" style="max-width: 95vw; max-height: 80vh; object-fit: contain;">
+</div>
+</div>
+</div>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-3">Stream sockets in Python (pt. 3)</h2>
+<h3 id="client-side-connection">Client-side (connection)</h3>
+<ol start="4">
+<li>To <em>connect</em> to a server, the client must know the server’s <em>IP address</em> and <em>port</em>:
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">try</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">connect</span><span style="color:#000;font-weight:bold">((</span><span style="color:#4e9a06">'A.B.C.D'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">54321</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#8f5902;font-style:italic"># connect to the server at address A.B.C.D:54321</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ConnectionRefusedError</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"The server is reachable but not wlling to accept the connection"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">TimeoutError</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"The server is not reachable"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"This may occur after a LONG while"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div><ul>
+<li>the <code>connect</code> method is used to establish a connection to a <em>remote</em> endpoint (acting as <em>server</em>)</li>
+<li>the argument is a <em>tuple</em> with the <em>address</em> and <em>port</em> of the <em>server</em></li>
+<li>the operation is <strong>blocking</strong>, until the connection is established</li>
+<li>when the timeout occurs can be regulated (<a href="https://docs.python.org/3/library/socket.html#notes-on-socket-timeouts">see doc</a>)
+<ul>
+<li><a href="https://docs.python.org/3/library/socket.html#socket.setdefaulttimeout"><code>socket.setdefaulttimeout(SECONDS)</code></a> sets the default timeout for <em>all</em> sockets (where <code>socket</code> is the module)</li>
+<li><a href="https://docs.python.org/3/library/socket.html#socket.socket.settimeout"><code>s.settimeout(SECONDS)</code></a> sets the timeout for <em>a single</em> socket (where <code>s</code> is the socket instance)</li>
+<li><code>SECONDS</code> $\equiv$ <code>None</code> means <em>no timeout</em></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-4">Stream sockets in Python (pt. 4)</h2>
+<h3 id="client-side-communication">Client-side (communication)</h3>
+<ol start="5">
+<li>Once the connection is <strong>established</strong>, the client can <em>send</em> and <em>receive</em> data to/from the server:
+<ul>
+<li>this implies writing/reading <em>chuncks</em> of <em>bytes</em>, on the socket’s output/input <em>stream</em></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>Golden rule</strong>: always be aware of <em>how many bytes</em> are being sent/received at a time
+<be> (i.e. <em>avoid</em> <strong>unilimited</strong> reads/writes: these may saturate the network, or the local memory)</be></p>
+</blockquote>
+<span class="fragment ">
+  <ol start="6">
+<li>How to <strong>send</strong> data to remove via <em>buffered</em> <strong>write</strong>:
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">data</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">bytes</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#4e9a06">b</span><span style="color:#4e9a06">'My very important payload'</span> <span style="color:#8f5902;font-style:italic"># this is an array of bytes of knwon length</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendall</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">data</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># send the data to the server</span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># .. other sending operations ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">shutdown</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SHUT_WR</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># signal to the remote that no more data will be sent</span>
+</span></span></code></pre></div><ul>
+<li>cf. documentation of <a href="https://docs.python.org/3/library/socket.html#socket.socket.sendall"><code>sock.sendall</code></a> and <a href="https://docs.python.org/3/library/socket.html#socket.socket.shutdown"><code>sock.shutdown</code></a></li>
+<li>the method is <strong>blocking</strong>, until all the data is sent</li>
+<li><code>data</code> is a <em>buffer</em> of known size</li>
+</ul>
+</li>
+</ol>
+<span class="fragment ">
+  <ol start="7">
+<li>How to <strong>receive</strong> data from the server via <em>buffered</em> <strong>read</strong>:
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">BUFFER_SIZE</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">4096</span> <span style="color:#8f5902;font-style:italic"># maximim amount of bytes to read at once, better to be constant</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">data</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#204a87">bytes</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recv</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">BUFFER_SIZE</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># receive up to 4096 bytes from the server</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">if</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#000">data</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># a.k.a. data == b''</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"The remote is over with the data"</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># this may happen if the remoted does shutdown(socket.SHUT_WR)</span>
+</span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># .. other receiving operations ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">shutdown</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SHUT_RD</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># signal to the remote that no more data will be received</span>
+</span></span></code></pre></div><ul>
+<li>cf. documentation of <a href="https://docs.python.org/3/library/socket.html#socket.socket.recv"><code>sock.recv</code></a></li>
+<li>the method is <strong>blocking</strong>, until <em>some</em> data is received</li>
+<li>here the buffer is a memory area ($\approx$ byte array) of 4KiB</li>
+</ul>
+</li>
+</ol>
+</span>
+</span>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-5">Stream sockets in Python (pt. 5)</h2>
+<h3 id="client-side-closing">Client-side (closing)</h3>
+<ol start="8">
+<li>Once the communication is over, the client must <em>close</em> the connection:
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># close the connection with the server</span>
+</span></span></code></pre></div><ul>
+<li>the <a href="https://docs.python.org/3/library/socket.html#socket.close"><code>close</code></a> method is used to <em>close</em> the connection</li>
+<li>the method is <strong>blocking</strong>, until the connection is closed (usually very fast)</li>
+<li>the <em>server</em> will be notified of the <em>closing</em> of the connection</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-5-1">Stream sockets in Python (pt. 5)</h2>
+<h3 id="server-side">Server-side</h3>
+<ol start="4">
+<li>
+<p>Server sockets will start <em>listening</em> for incoming connections, and will <em>accept</em> them <strong>one by one</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">listen</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">5</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># start listening for incoming connections, with a maximum of 5 pending connections</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">client_sock</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">client_address</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">accept</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># accept a new connection</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># client_sock is a new socket, connected to the client</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># client_address is the (ip, port) address of the client</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8f5902;font-style:italic"># .. other operations with the client ..</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">client_sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># close the connection with the client</span>
+</span></span></code></pre></div><ul>
+<li>the <a href="https://docs.python.org/3/library/socket.html#socket.socket.listen"><code>listen</code>(BACKLOG_LENGTH)</a> method is used to start listening for incoming connections
+<ul>
+<li>this is <strong>not blocking</strong>: it simply sets the <code>BACKLOG_LENGTH</code>, i.e. the amount of pending (unaccepted) connections the OS will enqueue before <em>refusing</em> new ones
+<ul>
+<li>refused connections will receive a <code>ConnectionRefusedError</code> on the remote side</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>the <a href="https://docs.python.org/3/library/socket.html#socket.socket.listen"><code>accept</code></a> method is used to accept a new connection
+<ul>
+<li>this dequeues the <em>first</em> pending connection, or <strong>blocks</strong> until a new connection arrives</li>
+</ul>
+</li>
+<li>the <code>client_sock</code> is a new <em>socket</em> instance, connected to the <em>client</em></li>
+<li>the <code>client_address</code> is the <em>address tuple</em> of the <em>client</em></li>
+</ul>
+</li>
+<li>
+<p>The new socket <code>client_sock</code> is used to <em>send</em> and <em>receive</em> data to/from the client</p>
+<ul>
+<li>this works exactly as for the <em>client</em> side…</li>
+<li>… except that it is already <em>connected</em> to the client</li>
+<li>the server socket <code>sock</code> is <em>only</em> used to <em>accept</em> new connections</li>
+</ul>
+</li>
+<li>
+<p>Eventually, some event should <em>break</em> the <code>while True</code> loop, and the server should <em>close</em> the listening socket:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># close the server socket (do not accept new connections)</span>
+</span></span></code></pre></div></li>
+</ol>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-6">Stream sockets in Python (pt. 6)</h2>
+<h3 id="connection-oriented-message-exchange">Connection-oriented message exchange</h3>
+<ol>
+<li>
+<p>Streams are cool for sending data in <em>reliable</em> and <em>ordered</em> way, but what if one wants to send a sequence of <em>messages</em>?</p>
+</li>
+<li>
+<p>Common use case of <em>stream</em> sockets:</p>
+<ol>
+<li><em>start</em> a connection between any two peers…</li>
+<li>… <em>keep</em> the connection <em>alive</em> for as long as possible…</li>
+<li>… <em>send messages</em> back and forth without the need to <em>reconnect</em> every time</li>
+</ol>
+</li>
+<li>
+<p>A common <strong>pattern</strong> for <em>message exchange</em> is to <strong>prefix</strong> each message with its <strong>length</strong>:</p>
+<ul>
+<li>this way, the <em>receiver</em> knows <em>how many bytes</em> to <em>read</em> from the <em>stream</em></li>
+<li>the <em>sender</em> must <em>send</em> the <em>length</em> of the message <em>before</em> sending the <em>message</em> itself</li>
+<li>the <em>receiver</em> must <em>read</em> the <em>length</em> of the message <em>before</em> reading the <em>message</em> itself</li>
+</ul>
+</li>
+</ol>
+</section><section>
+<h2 id="stream-sockets-in-python-pt-6-1">Stream sockets in Python (pt. 6)</h2>
+<h3 id="connection-oriented-message-exchange-example">Connection-oriented message exchange (example)</h3>
+<ol>
+<li>
+<p>Suppose that one node wants to send the following messages (of different sizes) to another node:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">messages</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">[</span><span style="color:#4e9a06">"The user pressed UP and RIGHT"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">"The user released RIGHT, and pressed LEFT"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">"The user released LEFT"</span><span style="color:#000;font-weight:bold">]</span>
+</span></span></code></pre></div></li>
+<li>
+<p>The <em>sender</em> must <em>prefix</em> each message with its <em>length</em>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">message</span> <span style="color:#204a87;font-weight:bold">in</span> <span style="color:#000">messages</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">length</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">len</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">payload</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">length</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">to_bytes</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">4</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">'big'</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">+</span> <span style="color:#000">message</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">encode</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendall</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">payload</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">shutdown</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SHUT_WR</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># no more data to send</span>
+</span></span></code></pre></div><ul>
+<li><code>length.to_bytes(4, 'big')</code> converts the <em>length</em> (an <code>int</code>) to a <em>4-byte</em> <em>big-endian</em> byte sequence (i.e. a <em>32-bit</em> integer) representing the same value</li>
+<li><code>message.encode()</code> converts the <em>string</em> to a <em>byte sequence</em> (UTF-8 encoding is used by default)</li>
+<li><code>payload</code> is the <em>concatenation</em> of the <em>length</em> (fixed size) and the <em>message</em> (variable size)
+<ul>
+<li>e.g. <code>b'\x00\x00\x00\x1dThe user pressed UP and RIGHT'</code> where <code>\x00\x00\x00\x1d</code> $\equiv$ <code>29</code> (in decimal)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>The <em>receiver</em> must <em>read</em> the <em>length</em> of the message <em>before</em> reading the <em>message</em> itself:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">length</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recv</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">4</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># read the length of the message</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#000">length</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># no more data to read</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">length</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">int</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">from_bytes</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">length_bytes</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">'big'</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># convert the length to an integer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">message</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recv</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">length</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># read the exact amount of bytes to get the message</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">message</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">message</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">decode</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># convert the byte sequence to a string</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Use received message </span><span style="color:#4e9a06">{</span><span style="color:#000">message</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06"> to do something"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">shutdown</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SHUT_RD</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># no more data to read</span>
+</span></span></code></pre></div></li>
+</ol>
+
+</section>
+</section><section>
+
+
+<section data-shortcode-section="">
+<h2 id="example-tcp-echo">Example: TCP Echo</h2>
+<ul>
+<li>
+<p>Let’s implement a simple <strong>echo</strong> application using <em>stream sockets</em></p>
+<ul>
+<li>the client will <em>forward</em> it’s <em>standard input stream</em> to the server, which will send it back to the client, which will <em>print it</em></li>
+<li>essentially, just like the <code>cat</code> command in Unix-like systems, when no argument is passed
+<ul>
+<li>but with the <em>server</em> acting as the intermediary</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Very didadical example, no real-world application</p>
+<ul>
+<li>but it is a good way to understand the <em>stream</em> sockets</li>
+</ul>
+</li>
+<li>
+<p>We will investigate what happens when the data stream is <em>too long</em></p>
+</li>
+<li>
+<p>See <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/">https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/</a></p>
+</li>
+</ul>
+</section><section>
+<h2 id="example-tcp-echo-1">Example: TCP Echo</h2>
+<h3 id="server-side">Server side</h3>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">BUFFER_SIZE</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">1024</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">mode</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">]</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">lower</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">strip</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># 'server' for server, 'client' for client</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">port</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">int</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">])</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">with</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">socket</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">AF_INET</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SOCK_STREAM</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">as</span> <span style="color:#000">server</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">server</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bind</span><span style="color:#000;font-weight:bold">((</span><span style="color:#4e9a06">'0.0.0.0'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">port</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#8f5902;font-style:italic"># bind to any local address, on the specified port</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">server</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">listen</span><span style="color:#000;font-weight:bold">(</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># only one connection at a time</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"# echo server listening on port </span><span style="color:#4e9a06">{</span><span style="color:#000">port</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sock</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">addr</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">server</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">accept</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"# start echoing data from </span><span style="color:#4e9a06">{</span><span style="color:#000">addr</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">buffer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recv</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">BUFFER_SIZE</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#000">buffer</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendall</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">buffer</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"# echoed </span><span style="color:#4e9a06">{</span><span style="color:#204a87">len</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">buffer</span><span style="color:#000;font-weight:bold">)</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06"> bytes: </span><span style="color:#4e9a06">{</span><span style="color:#000">buffer</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">flush</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"# connection closed"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></div>
+<div class="col " style="text-align: left;"><br>
+<ol>
+<li>The server <em>listens</em> for incoming connections, and <em>accepts</em> them one by one</li>
+<li>Upon establishing a <em>connection</em>:
+<ol>
+<li>the server <em>reads</em> <strong>chunks</strong> of data of <em>fixed size</em> from the client
+<ul>
+<li>if <em>no byte</em> is read, then the interaction is <em>over</em></li>
+</ul>
+</li>
+<li>the server <em>sends</em> the chunk back to the client</li>
+<li>the server <em>logs</em> which and how many bytes it has received</li>
+</ol>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<p>Launch the <em>server</em> via the commnad <code>poetry run python -m snippets -l 3 -e 1 server PORT</code>
+(cf. <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example1_tcp_echo_wrong.py">source code</a>)</p>
+</section><section>
+<h2 id="example-tcp-echo-2">Example: TCP Echo</h2>
+<h3 id="client-side-attempt-1">Client Side, Attempt 1</h3>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">BUFFER_SIZE</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#0000cf;font-weight:bold">1024</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">mode</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">]</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">lower</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">strip</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># 'server' for server, 'client' for client</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">remote_endpoint</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">])</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">socket</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">AF_INET</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SOCK_STREAM</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">bind</span><span style="color:#000;font-weight:bold">((</span><span style="color:#4e9a06">'0.0.0.0'</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#8f5902;font-style:italic"># any port on is fine</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">connect</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">remote_endpoint</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"# connected to </span><span style="color:#4e9a06">{</span><span style="color:#000">remote_endpoint</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># forward the whole standard input to the server</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">buffer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stdin</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">buffer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">read</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">BUFFER_SIZE</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#000">buffer</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendall</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">buffer</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">shutdown</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">socket</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">SHUT_WR</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># nothing more to send</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># receive the whole stream from the server</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">buffer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recv</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">BUFFER_SIZE</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#204a87;font-weight:bold">not</span> <span style="color:#000">buffer</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stdout</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">buffer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">write</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">buffer</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stdout</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">buffer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">flush</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"# connection closed"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></div>
+<div class="col " style="text-align: left;"><br>
+<ol>
+<li>The client <em>connects</em> to the server</li>
+<li>The client <em>forwards</em> its <em>standard input stream</em> to the server
+<ul>
+<li><code>BUFFER_SIZE</code> bytes at a time</li>
+<li>until the <em>end of the stream</em> is reached
+<ul>
+<li>e.g. when the user presses <code>Ctrl+D</code> on Unix-like systems</li>
+<li>or <code>Ctrl+Z</code> then <code>Enter</code> on Windows</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>The client <em>signals</em> it has <em>no more data</em> to send
+<ul>
+<li>by shutting down the <em>write</em> part of the socket</li>
+</ul>
+</li>
+<li>The client <em>receives</em> the <em>echoed</em> data from the server, and <em>prints</em> it to the <em>standard output</em>
+<ul>
+<li><code>BUFFER_SIZE</code> bytes at a time</li>
+<li>until the <em>end of the stream</em> is reached
+<ul>
+<li>e.g. when the server <em>closes</em> the connection</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>The client <em>closes</em> the connection</li>
+</ol>
+</div>
+</div>
+</div>
+<p>Launch the <em>client</em> via the commnad <code>poetry run python -m snippets -l 3 -e 1 client SERVER_IP:SERVER_PORT</code>
+(cf. <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example1_tcp_echo_wrong.py">source code</a>)</p>
+</section><section>
+<h2 id="example-tcp-echo-3">Example: TCP Echo</h2>
+<h3 id="attempt-1----manual-testing">Attempt 1 – Manual Testing</h3>
+<ol>
+<li>
+<p>Run the <em>server</em> with <code>poetry run python -m snippets -l 3 -e 1 server PORT</code></p>
+<ul>
+<li>choose a <em>port</em> number, e.g. <code>8080</code></li>
+</ul>
+</li>
+<li>
+<p>Run the <em>client</em> with <code>poetry run python -m snippets -l 3 -e 1 client SERVER_IP:SERVER_PORT</code></p>
+<ul>
+<li>choose the <em>server’s IP address</em> and <em>port</em>, e.g. <code>localhost:8080</code></li>
+</ul>
+</li>
+<li>
+<p>Write some text in the <em>client</em>’s terminal, and press <code>Ctrl+D</code> (Unix-like) or <code>Ctrl+Z</code> then <code>Enter</code> (Windows)</p>
+<ul>
+<li>the <em>server</em> should <em>echo</em> the text back to the <em>client</em></li>
+<li>you should see the text you worte <em>duplication</em> in the <em>client</em>’s terminal</li>
+<li>you can also see the <em>server</em>’s logs</li>
+</ul>
+</li>
+</ol>
+<span class="fragment ">
+  <h3 id="heading"></h3>
+<ol start="4">
+<li>Yay! It seems working, but let’s try to send a <em>long</em> message
+<ol>
+<li>let’s re-launch the server as before</li>
+<li>let’s re-lanch the client as follows:
+<code>poetry run python rand.py | poetry run python -m snippets -l 3 -e 1 client SERVER_IP:SERVER_PORT</code>
+<ul>
+<li>where <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/rand.py">the program <code>rand.py</code></a> aims at generating an <em>infinite</em> sequence of random numbers</li>
+<li>where <code>|</code> is the <em>pipe</em> operator, which <em>redirects</em> the <em>standard output</em> of the <em>left</em> command to the <em>standard input</em> of the <em>right</em> command</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+</span>
+</section><section>
+<h2 id="example-tcp-echo-4">Example: TCP Echo</h2>
+<h3 id="attempt-1----issues">Attempt 1 – Issues</h3>
+<ol>
+<li>
+<p>If the <em>client</em>’s input stream is too long…</p>
+</li>
+<li>
+<p>… and the <em>client</em> only starts <em>receiving</em> the <em>echoed</em> data <strong>after</strong> it has <em>sent</em> <em>all</em> the data…</p>
+</li>
+<li>
+<p>… even if the <em>server</em> <em>echoes</em> the data back to the <em>client</em> one chunch at a time…</p>
+</li>
+<li>
+<p>… the <em>client</em> ingoing <em>buffer</em> may saturate, and the will eventually <em>slow down</em> or <em>stop</em> sending data</p>
+<ul>
+<li>this is just how TCP works: recall <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Flow_control">TCP’s flow control</a></li>
+</ul>
+</li>
+<li>
+<p>So, a very long stream + this particular client implementation = <strong>deadlock</strong></p>
+</li>
+<li>
+<p>Solution: <strong>make the client <em>interleave</em> sending and receiving</strong></p>
+</li>
+</ol>
+</section><section>
+<h2 id="example-tcp-echo-5">Example: TCP Echo</h2>
+<h3 id="attempt-2----client-side">Attempt 2 – Client Side</h3>
+<div class="container w-100 m-0 p-0">
+    <div class="row "><div class="col " style="text-align: left;"><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic"># prologue of the script is unchanged w.r.t. attempt 1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"# connected to </span><span style="color:#4e9a06">{</span><span style="color:#000">remote_endpoint</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">buffer_local</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stdin</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">buffer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">read</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">BUFFER_SIZE</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">buffer_local</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">sendall</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">buffer_local</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">buffer_remote</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">recv</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">BUFFER_SIZE</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">buffer_local</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#000">buffer_remote</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># check if the echoed data is correct</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Wrong echoed data:"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">file</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stderr</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"     local: </span><span style="color:#4e9a06">{</span><span style="color:#000">buffer_local</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">file</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stderr</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"    remote: </span><span style="color:#4e9a06">{</span><span style="color:#000">buffer_remote</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">file</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stderr</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stdout</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">buffer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">write</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">buffer_remote</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">stdout</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">buffer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">flush</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">sock</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">"# connection closed"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></div>
+<div class="col " style="text-align: left;"><br>
+<ol>
+<li>The client <em>connects</em> to the server</li>
+<li>The client <em>forwards</em> its <em>standard input stream</em> to the server
+<ul>
+<li><code>BUFFER_SIZE</code> bytes at a time</li>
+</ul>
+</li>
+<li>After <em>each</em> chunck of data is <em>sent</em>
+<ul>
+<li>the client <em>receives</em> the <em>echoed</em> data from the server</li>
+<li>if the sent and received data <em>differ</em>, the client <em>stops</em> the communication, printing an error</li>
+</ul>
+</li>
+<li>When the <em>end of the input stream</em> is reached and the last chuck of data is <em>received</em>
+<ul>
+<li>the client <em>closes</em> the connection</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</section><section>
+<h2 id="example-tcp-echo-6">Example: TCP Echo</h2>
+<h3 id="attempt-2----manual-testing">Attempt 2 – Manual Testing</h3>
+<ol>
+<li>
+<p>Run the <em>server</em> with <code>poetry run python -m snippets -l 3 -e 2 server PORT</code></p>
+<ul>
+<li>choose a <em>port</em> number, e.g. <code>8080</code></li>
+</ul>
+</li>
+<li>
+<p>Run the <em>client</em> with <code>poetry run python -m snippets -l 3 -e 2 client SERVER_IP:SERVER_PORT</code></p>
+<ul>
+<li>choose the <em>server’s IP address</em> and <em>port</em>, e.g. <code>localhost:8080</code></li>
+</ul>
+</li>
+<li>
+<p>Test it works as attempt 1 for short messages</p>
+</li>
+<li>
+<p>Now, let’s try to send a <em>long</em> message</p>
+<ol>
+<li>let’s re-launch the server as before</li>
+<li>let’s re-lanch the client as follows:
+<code>poetry run python rand.py | poetry run python -m snippets -l 3 -e 2 client SERVER_IP:SERVER_PORT</code>
+<ul>
+<li>where <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/rand.py">the program <code>rand.py</code></a> aims at generating an <em>infinite</em> sequence of random numbers</li>
+<li>where <code>|</code> is the <em>pipe</em> operator, which <em>redirects</em> the <em>standard output</em> of the <em>left</em> command to the <em>standard input</em> of the <em>right</em> command</li>
+</ul>
+</li>
+<li>this time it should work</li>
+</ol>
+</li>
+</ol>
+</section><section>
+<h2 id="example-tcp-echo-7">Example: TCP Echo</h2>
+<h3 id="attempt-2----example-output">Attempt 2 – Example output</h3>
+<h4 id="client">Client</h4>
+<p><code>poetry run python rand.py | poetry run python -m snippets -l 3 -e 2 client localhost:8080</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span>502573549
+</span></span><span style="display:flex;"><span>-453960860
+</span></span><span style="display:flex;"><span>-381856593
+</span></span><span style="display:flex;"><span>-286722763
+</span></span><span style="display:flex;"><span>-211192745
+</span></span><span style="display:flex;"><span>-2134899619
+</span></span><span style="display:flex;"><span>-1711689099
+</span></span><span style="display:flex;"><span>-1503312253
+</span></span><span style="display:flex;"><span>-1701591573
+</span></span><span style="display:flex;"><span>-1205926153
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h4 id="server">Server</h4>
+<p><code>poetry run python -m snippets -l 3 -e 2 server 8080</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span># echo server listening on port 8080
+</span></span><span style="display:flex;"><span># start echoing data from ('127.0.0.1', 44267)
+</span></span><span style="display:flex;"><span># echoed 1024 bytes: b'502573549\n-453960860\n-381856593\n-286722763\n-211192745\n-2134899619\n-1711689099\n-1503312253\n-1701591573\n-1205926153\n-50412914\n213710709\n-577009406\n219425615\n-252566774\n61565769\n1922001980\n-1873744585\n936906805\n2078720013\n1222654877\n-1289501938\n1395814954\n-1798177949\n-2041286581\n1932951426\n288129622\n803985826\n496679522\n-926425443\n14153399\n904025100\n-319222238\n734804897\n1102692378\n-262778378\n-377056832\n2082693948\n48281326\n-1760419856\n-956463672\n381424876\n1190469830\n-94801835\n-506278031\n-1861075783\n-321914757\n-151797661\n-974543774\n-676394188\n-1623558767\n-548408375\n-1997202209\n371955653\n-53265711\n974383730\n1230806274\n-1680300244\n-1878714490\n-674007318\n-1736582601\n1041815141\n-2046487010\n-1381702097\n-417225600\n-816967349\n1698648802\n-375787019\n-1796572572\n-1912254955\n657751568\n-792402858\n682694407\n-708204980\n1315814466\n1659654562\n1422679836\n1854502958\n-335151514\n1055416618\n-1791736404\n2127088482\n818796704\n-1398097789\n-1076649501\n-1950422542\n677576321\n1510589358\n886913109\n-1977200570\n-920062497\n-72348672\n-1656296063\n18'
+</span></span><span style="display:flex;"><span># echoed 1024 bytes: b'60998094\n595222830\n-205208337\n834971633\n2084933832\n127694008\n211867414\n-1314672239\n329159798\n1239086726\n-65480338\n-1325348410\n78317563\n-147023906\n-718316757\n-1263506431\n877536631\n461893425\n-185087136\n-928284670\n-1686544446\n-468846558\n-1444844383\n414235162\n1774142424\n-1424176065\n264020445\n-2094294486\n-28058625\n-1391733741\n1039418086\n-1082553917\n1234585496\n-557844468\n-444121114\n-1868175869\n983621092\n1562181369\n-1130324982\n-1110872934\n-1563560497\n-1947233464\n219012865\n-1195987860\n-676060453\n-783549042\n583654808\n-277637291\n1885661158\n2014417331\n1596822218\n1965074998\n1664866272\n-574923596\n1247714696\n-1840435092\n-2005991425\n-718194566\n1902005952\n1032386525\n-1344433047\n448123247\n-1128830726\n1328377169\n1349144940\n898276016\n-313043102\n-143686687\n-401517594\n1885404533\n-381222101\n-459800837\n597736346\n1243757372\n1107668700\n741676479\n1902621581\n-1395444549\n1370602517\n1330286387\n1060817734\n-2046498769\n1390476769\n217760508\n-2008484501\n-1114114459\n22555323\n1070349670\n1366422557\n-1286331789\n1275922128\n-785260906\n-962938519\n17'
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div>
+</section>
+</section>
+
+
+<section data-shortcode-section="">
+<section data-noprocess="" data-shortcode-slide="" id="example-tcp-chat">
+<h2 id="example-tcp-chat">Example: TCP Chat</h2>
+<p>TL;DR: Let’s redo the UDP chat, but with TCP, and with <em>no groups</em></p>
+<ul>
+<li>
+<p>Let’s implement a simple <strong>1-to-1 chat</strong> application using <em>stream sockets</em></p>
+</li>
+<li>
+<p><strong>Client-server</strong> communication: each participant sends messages to <em>all</em> the others</p>
+</li>
+<li>
+<p>Each participant is <strong>identified</strong> by a <em>nickname</em> and/or an <em>endpoint</em></p>
+</li>
+<li>
+<p>Each <strong>message</strong> contains</p>
+<ol>
+<li>the <em>nickname</em> of the <em>sender</em></li>
+<li>the <em>text</em> of the message</li>
+<li>the <em>timestamp</em> of the message</li>
+</ol>
+</li>
+<li>
+<p><strong>Command-line</strong> UI: each participant can type messages to send, and see incoming messages in the <em>console</em></p>
+</li>
+<li>
+<p>See <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example3_tcp_chat.py">https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example3_tcp_chat.py</a></p>
+</li>
+</ul>
+</section>
+<section data-noprocess="" data-shortcode-slide="" id="utilities">
+<h2 id="example-tcp-chat-1">Example: TCP Chat</h2>
+<h3 id="utilitieshttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab3__init__py-pt-1"><a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/__init__.py">Utilities</a> (pt. 1)</h3>
+<p><img src="https://www.plantuml.com/plantuml/svg/bPAnZjim38PtFmMHvH8qpWC8xLGKtRgqkw38J2oSGXgYSjVYUkzUMP9Z1u5nw1B554dz_FbPRqJWAnEXZOu9tXe0W1Qq5hRF61MKyr2EVFi9F5lZjUcwW28AudNmMAy2NZZYmrrjQZqBTWgEp7uE6k-FnZuhE5qfoxXT1RJeNZ3es0SqgR2SZiw7N_bVVLLhHovglIqozp3r_FA32NSrIv2wxGL5p1aLI0pJHNrckylH6Xorfj1DIs-eyvWUidn90dHj9Dkf2vF65wIupR-vrHu6yyUpwSfNLe2Xkh87387JrxVV5eTnxbtptZJ44S7ZAGAV5gjflYDXC145SdzHJGkRpLELyRJPA7ZjaS103O6JQRAkvEQHvipO8zXvzqxAp2KtQrjqfQ8MsDfha1HqVgo-NAxah8d9aGQfWr5zqrIkl4EAyFQm90pZJYiZ3yjwd-f_vhmRa-j4jk2THAIFG6bXXRM5k8730p-h3CpkVO31cAWMszn3dNwTXJiCPpA2E_SPZUBE6XR5aFjT5zz1eWbHgcLfYb9GHvah25-pR8iJ7PWgZwcidtYIoCFA4pmiNe3_G2fRFDRCtYx0cXs4pt_Rq5R65CZrs1Pg-7INTUWErIe5Dk3er3y0" alt=""></p>
+</section><section>
+<h2 id="example-tcp-chat-2">Example: TCP Chat</h2>
+<h3 id="utilitieshttpsgithubcomunibo-fc-isi-dslab-snippetsblobmastersnippetslab3__init__py-pt-2"><a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/__init__.py">Utilities</a> (pt. 2)</h3>
+<ul>
+<li>
+<p><code>Connection</code>: a <em>communication channel</em> among 2 endponts, for sending and <em>asynchrnously</em> receiving messages <em>via TCP</em></p>
+<ul>
+<li>backed by a <em>stream socket</em> for the communication</li>
+<li>uses a <em>thread</em> for the <em>asynchronous</em> reception of messages</li>
+<li>provides a <em>callback</em> for handling <em>incoming</em> messages</li>
+<li>provides a <em>method</em> for <em>sending</em> messages</li>
+</ul>
+</li>
+<li>
+<p><code>Client</code>: a particular case of <code>Connection</code> which <em>connects</em> to a <em>server</em> upon creation</p>
+</li>
+<li>
+<p><code>Server</code>: a facility to <em>listen</em> for incoming <em>connections</em> and <em>accept</em> them, creating a <code>Connection</code> for each of them</p>
+<ul>
+<li>backed by a <em>stream socket</em> for the listening</li>
+<li>uses a <em>thread</em> for the <em>asynchronous</em> <em>acceptance</em> of connections</li>
+<li>provides a <em>callback</em> for handling <em>incoming</em> connections</li>
+</ul>
+</li>
+</ul>
+</section><section>
+<h2 id="example-tcp-chat-3">Example: TCP Chat</h2>
+<p>(cf. source code at <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example3_tcp_chat.py">https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example3_tcp_chat.py</a>)</p>
+<h3 id="client-side">Client Side</h3>
+<ol>
+<li>
+<p>Prologue:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">mode</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">]</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">lower</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">strip</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># 'server' for server, 'client' for client</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">remote_endpoint</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">]</span>
+</span></span></code></pre></div></li>
+<li>
+<p>A callback for handling <em>incoming</em> messages:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">on_message_received</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">event</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">payload</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">connection</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">error</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">match</span> <span style="color:#000">event</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#4e9a06">'message'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">payload</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># print any message received</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#4e9a06">'close'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Connection with peer </span><span style="color:#4e9a06">{</span><span style="color:#000">connection</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">remote_address</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06"> closed"</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># inform the user the connection is closed</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">global</span> <span style="color:#000">remote_peer</span><span style="color:#000;font-weight:bold">;</span> <span style="color:#000">remote_peer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">None</span> <span style="color:#8f5902;font-style:italic"># forget about the disconnected peer</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#4e9a06">'error'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">error</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># inform the user about any error which occurs</span>
+</span></span></code></pre></div></li>
+<li>
+<p><em>Establish</em> the connection, <em>register</em> the callback:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">remote_peer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Client</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">server_address</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">remote_endpoint</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000">callback</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">on_message_received</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Connected to </span><span style="color:#4e9a06">{</span><span style="color:#000">remote_peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">remote_address</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Get <em>outgoing</em> messages from the console and <em>send</em> them to the remote peer:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">username</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">input</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'Enter your username to start the chat:</span><span style="color:#4e9a06">\n</span><span style="color:#4e9a06">'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">'Type your message and press Enter to send it. Messages from other peers will be displayed below.'</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> <span style="color:#204a87;font-weight:bold">True</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">try</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">content</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">input</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">send_message</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">content</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">username</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#8f5902;font-style:italic"># sends the message to the remote peer, if message is not empty and remote peer is connected</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">except</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#c00;font-weight:bold">EOFError</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#c00;font-weight:bold">KeyboardInterrupt</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">remote_peer</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">remote_peer</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">close</span><span style="color:#000;font-weight:bold">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">break</span>
+</span></span></code></pre></div></li>
+</ol>
+</section><section>
+<h2 id="example-tcp-chat-4">Example: TCP Chat</h2>
+<p>(cf. source code at <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example3_tcp_chat.py">https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example3_tcp_chat.py</a>)</p>
+<h3 id="server-side">Server Side</h3>
+<ol>
+<li>
+<p>Prologue:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">import</span> <span style="color:#000">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">mode</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">1</span><span style="color:#000;font-weight:bold">]</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">lower</span><span style="color:#000;font-weight:bold">()</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">strip</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#8f5902;font-style:italic"># 'server' for server, 'client' for client</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">port</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87">int</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">sys</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">argv</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">2</span><span style="color:#000;font-weight:bold">])</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">remote_peer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#204a87;font-weight:bold">None</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Callback <code>on_message_received</code> is exactly as in the <em>client</em> side</p>
+</li>
+<li>
+<p>Server-specific callback for handling ingoing connections:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">on_new_connection</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">event</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">connection</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">address</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">error</span><span style="color:#000;font-weight:bold">):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">match</span> <span style="color:#000">event</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#4e9a06">'listen'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Server listening on port </span><span style="color:#4e9a06">{</span><span style="color:#000">address</span><span style="color:#000;font-weight:bold">[</span><span style="color:#0000cf;font-weight:bold">0</span><span style="color:#000;font-weight:bold">]</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06"> at </span><span style="color:#4e9a06">{</span><span style="color:#4e9a06">", "</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">join</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">local_ips</span><span style="color:#000;font-weight:bold">())</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#4e9a06">'connect'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Open ingoing connection from: </span><span style="color:#4e9a06">{</span><span style="color:#000">address</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000">connection</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">callback</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">on_message_received</span> <span style="color:#8f5902;font-style:italic"># attach callback to the new connection</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87;font-weight:bold">global</span> <span style="color:#000">remote_peer</span><span style="color:#000;font-weight:bold">;</span> <span style="color:#000">remote_peer</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">connection</span> <span style="color:#8f5902;font-style:italic"># assign the new connection to the global variable</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#4e9a06">'stop'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Stop listening for new connections"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">case</span> <span style="color:#4e9a06">'error'</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">error</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Actually start the server:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="nohighlight" data-noescape=""><span style="display:flex;"><span><span style="color:#000">server</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">Server</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">port</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">port</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">callback</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">on_new_connection</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#204a87">print</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">f</span><span style="color:#4e9a06">"Server started on port </span><span style="color:#4e9a06">{</span><span style="color:#000">port</span><span style="color:#4e9a06">}</span><span style="color:#4e9a06">"</span><span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Getting &amp; sending messages is exactly as in the <em>client</em> side</p>
+</li>
+</ol>
+</section><section>
+<h2 id="example-tcp-chat-5">Example: TCP Chat</h2>
+<h3 id="manual-testing">Manual Testing</h3>
+<ol>
+<li>
+<p>Run the <em>server</em> with <code>poetry run python -m snippets -l 3 -e 3 server PORT</code></p>
+<ul>
+<li>choose a <em>port</em> number, e.g. <code>8080</code></li>
+</ul>
+</li>
+<li>
+<p>Run the <em>client</em> with <code>poetry run python -m snippets -l 3 -e 3 client SERVER_IP:SERVER_PORT</code></p>
+<ul>
+<li>choose the <em>server’s IP address</em> and <em>port</em>, e.g. <code>localhost:8080</code></li>
+</ul>
+</li>
+<li>
+<p>This should work more or less like the UDP chat, but <em>no message-dispatching issues</em></p>
+<ul>
+<li>try to <em>gracefully</em> close the connection by pressing <code>Ctrl+D</code> (Unix-like) or <code>Ctrl+Z</code> then <code>Enter</code> (Windows) on some peer: the other peer should notice it!
+<ul>
+<li>thanks to <em>connection-orientation</em>, peers can react to the <em>closing</em> of the connection</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+
+</section>
+</section>
+
+<section data-noprocess="" data-shortcode-slide="" id="exercise-tcp-group-chat">
+  
+<h2 id="exercise-tcp-group-chat">Exercise: TCP Group Chat</h2>
+<ul>
+<li>
+<p><strong>Prerequisites</strong>:</p>
+<ol>
+<li>understand <a href="#/stream-sockets">stream sockets</a></li>
+<li>understand the <a href="#/example-udp-chat">UDP <em>group</em> chat example</a></li>
+<li>understand the <a href="#/example-tcp-chat">TCP chat example</a></li>
+<li>understand the provided Python code: <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/__init__.py"><code>snippets/lab3/__init__.py</code></a>, <a href="https://github.com/unibo-fc-isi-ds/lab-snippets/blob/master/snippets/lab3/example3_tcp_chat.py"><code>snippets/lab3/example3_tcp_chat.py</code></a></li>
+</ol>
+</li>
+<li>
+<p><strong>Goal</strong>: support group chats in TCP</p>
+<ul>
+<li>where clients may appear and disappear at any time</li>
+<li>similarly to what happens for the UDP <em>group</em> chat example</li>
+<li>in such a way <em>each peer <strong>broadcasts</strong> messages to all the other peers it has been contacted with so far</em></li>
+</ul>
+</li>
+<li>
+<p><strong>Hints</strong>:</p>
+<ul>
+<li>you can and should reuse the provided code, possibly modifying it</li>
+<li>there’s no need anymore to distinguish among <em>servers</em> and <em>clients</em>: all peers act simultaneously as both</li>
+<li>peers may be informed about the <em>endpoints</em> of other peers at <em>launch time</em> (via <em>command-line</em> arguments)</li>
+</ul>
+</li>
+<li>
+<p><strong>Deadline</strong>: two weeks from today</p>
+</li>
+<li>
+<p><strong>Incentive</strong>: +1 point on the final grade (if solution is satisfying)</p>
+</li>
+<li>
+<p><strong>Submission</strong>:</p>
+<ol>
+<li>fork the <a href="https://github.com/unibo-fc-isi-ds/lab-snippets"><code>lab-snippets</code> repository</a></li>
+<li>create a new branch named <code>exercise-lab3</code></li>
+<li>commit your solution in the <code>snippets/lab3</code> directory (possibly in a new file named <code>exercise_tcp_group_chat.py</code>)</li>
+<li>push the branch to your fork &amp; create a <strong>pull request</strong> to the original repository, entitled <code>[A.Y. 2024/2025 Surname, Name] Exercise: TCP Group Chat</code>
+<ul>
+<li>in the pull request, describe your solution, motivate your choices, and explain how to test it</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</section><section>
+<h1 id="lecture-is-over">Lecture is Over</h1>
+<br>
+<p>Compiled on: 2024-10-25
+ — <a href="?print-pdf&amp;pdfSeparateFragments=false"><i class="fa fa-print" aria-hidden="true"></i> printable version</a></p>
+<p><a href="../#/toc"><i class="fa fa-undo" aria-hidden="true"></i> back to ToC</a></p>
+</section>
+
+  
+
+
+</div>
+      
+
+    </div>
+<script type="text/javascript" src="/slides-module2.github.io/reveal-hugo/object-assign.js"></script>
+
+<a href="/slides-module2.github.io/reveal-js/dist/print/" id="print-location" style="display: none;"></a>
+
+<script type="application/json" id="reveal-hugo-site-params">{"custom_theme":"custom-theme.scss","custom_theme_compile":true,"custom_theme_options":{"enablesourcemap":true,"targetpath":"css/custom-theme.css"},"height":"1080","highlight_theme":"solarized-dark","history":true,"mermaid":[{}],"slide_number":true,"theme":"league","transition":"slide","transition_speed":"fast","width":"1920"}</script>
+<script type="application/json" id="reveal-hugo-page-params">null</script>
+
+<script src="/slides-module2.github.io/reveal-js/dist/reveal.js"></script>
+
+
+  
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/markdown/markdown.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/highlight/highlight.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/zoom/zoom.js"></script>
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/notes/notes.js"></script>
+  
+  
+  <script type="text/javascript" src="/slides-module2.github.io/reveal-js/plugin/notes/notes.js"></script>
+
+
+
+
+<script type="text/javascript">
+  
+  
+  function camelize(map) {
+    if (map) {
+      Object.keys(map).forEach(function(k) {
+        newK = k.replace(/(\_\w)/g, function(m) { return m[1].toUpperCase() });
+        if (newK != k) {
+          map[newK] = map[k];
+          delete map[k];
+        }
+      });
+    }
+    return map;
+  }
+
+  var revealHugoDefaults = { center: true, controls: true, history: true, progress: true, transition: "slide" };
+
+  var revealHugoPlugins = { 
+    plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom ]
+   };
+  var revealHugoSiteParams = JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);
+  var revealHugoPageParams = JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);
+  
+  var options = Object.assign({},
+    camelize(revealHugoDefaults),
+    camelize(revealHugoSiteParams),
+    camelize(revealHugoPageParams),
+    camelize(revealHugoPlugins));
+  Reveal.initialize(options);
+</script>
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+
+
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+</script>
+
+<script type="text/javascript" id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+<script>
+  if (/.*?(\?|&)print-pdf/.test(window.location.toString())) {
+      var ytVideos = document.getElementsByTagName("iframe")
+      for (let i = 0; i < ytVideos.length; i++) {
+          var videoFrame = ytVideos[i]
+          var isYouTube = /^https?:\/\/(www.)youtube\.com\/.*/.test(videoFrame.src)
+          if (isYouTube) {
+              console.log(`Removing ${videoFrame.src}`)
+              var parent = videoFrame.parentElement
+              videoFrame.remove()
+              var p = document.createElement('p')
+              p.append(
+                  document.createTextNode(
+                      "There was an embedded video here, but it is disabled in the printed version of the slides."
+                  )
+              )
+              p.append(document.createElement('br'))
+              p.append(
+                  document.createTextNode(
+                      `Visit instead ${
+                          videoFrame.src
+                      } or ${
+                          videoFrame.src.replace(
+                              /(^https?:\/\/(www.)youtube\.com)\/(embed\/)(\w+).*/,
+                              "https://www.youtube.com/watch?v=$4"
+                          )
+                      }`
+                  )
+              )
+              parent.appendChild(p)
+          }
+      }
+  }
+</script>
+
+
+    
+  
+
+</body></html>
