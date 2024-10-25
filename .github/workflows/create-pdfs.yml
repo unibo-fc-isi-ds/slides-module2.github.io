@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
           path: pages
           ref: master
-          repository: unibo-fc-isi-ds/slides-module2.github.io
+          repository: unibo-fc-isi-ds/slides-module2
       - name: Count the commits so far
         id: commit-counter
         run: echo "commits=$(git -C pages rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
@@ -55,6 +55,6 @@ jobs:
           allowUpdates: true
           artifacts: "*.pdf"
           replacesArtifacts: true
-          repo: unibo-fc-isi-ds/slides-module2
+          repo: slides-module2
           tag: ${{ steps.version-compute.outputs.version }}
           token: ${{ secrets.DEPLOYMENT_TOKEN }}
