@@ -51,7 +51,7 @@ jobs:
       - name: Make the pdfs
         run: shared-slides/makepdfs.rb pages
       - name: Deliver the pdfs
-        if: github.event_name == 'workflow_run'
+        # if: github.event_name == 'workflow_run'
         uses: ncipollo/release-action@v1.14.0
         with:
           allowUpdates: true
