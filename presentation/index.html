@@ -31,7 +31,7 @@
 <h3 id="hahahugoshortcode1s2hbhb"><a href="mailto:giovanni.ciatto@unibo.it">Giovanni Ciatto</a></h3>
 <br>
 <br>
-<p>Compiled on: 2024-10-28
+<p>Compiled on: 2024-11-13
  — <a href="?print-pdf&amp;pdfSeparateFragments=false"><i class="fa fa-print" aria-hidden="true"></i> printable version</a></p>
 <p><a href="../#/toc"><i class="fa fa-undo" aria-hidden="true"></i> back to ToC</a></p>
 </section><section>
@@ -86,7 +86,7 @@
 <li><em>serialization</em> is the process of converting an object into a stream of characters/bytes</li>
 <li><em>deserialization</em> is the reverse process</li>
 <li>both operations imply a <em>common</em> target/source <strong>data interchange format</strong> (e.g. JSON)</li>
-<li>both operations are _<strong>unavoidable</strong> in distributed systems programming</li>
+<li>both operations are <strong>unavoidable</strong> in distributed systems programming</li>
 </ul>
 </li>
 <li>
@@ -147,7 +147,7 @@
 </li>
 </ul>
 <blockquote>
-<p><strong>The problem</strong>: most programming languages / platforms / OS use <em>different</em> conventions for representing data
+<p><strong>The problem</strong>: most programming languages/platforms/OS use <em>different</em> conventions for representing data
 <br> <strong>The solution</strong>: <em>agree</em> on the data format to use for <em>communication</em></p>
 </blockquote>
 <p>corollary: data interchange formats are an <strong>essential</strong> aspect of every interaction pattern / protocol</p>
@@ -272,7 +272,7 @@ this is why inexperienced programmers <em>often</em> don’t <em>notice</em> the
 </ul>
 </li>
 <li>
-<p>Other than supporting encodings, most <em>programming</em> or <em>data representation languages</em> also support_</p>
+<p>Other than supporting encodings, most <em>programming</em> or <em>data representation languages</em> also support</p>
 <ul>
 <li><strong>escape sequences</strong> $\approx$ sub-sequences of characters that represent a <em>single</em> character</li>
 </ul>
@@ -446,7 +446,7 @@ this is why inexperienced programmers <em>often</em> don’t <em>notice</em> the
 </ol>
 </section><section>
 <h2 id="modelling-classes">Modelling (classes)</h2>
-<figure id="plantuml-figure-1730140396255912515" class="plantuml" alt="" style="width: 100%;height: 60vh;max-width: 95vw;max-height: 80vh;">
+<figure id="plantuml-figure-1731505442289785289" class="plantuml" alt="" style="width: 100%;height: 50vh;max-width: 95vw;max-height: 80vh;">
 <p>package “users” {
 class User {
 +username: str
@@ -509,7 +509,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 <p>}</p>
 </figure>
 <script>
-    handlePlantumlFigureByID("plantuml-figure-1730140396255912515");
+    handlePlantumlFigureByID("plantuml-figure-1731505442289785289");
 </script>
 <div class="container w-100 m-0 p-0">
     <div class="row "><div class="col " style="text-align: left;"><ul>
@@ -688,7 +688,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 </div>
 <ul>
 <li>
-<p>One key part in any distributed system <em>design</em> / implementation is how to about <em>supporting</em> (de)serialization:</p>
+<p>One key part in any distributed system <em>design</em> / implementation is how to about <em>supporting</em> <strong>(de)serialization</strong>:</p>
 <ul>
 <li><em>what</em> data should be (de)serialized?</li>
 <li>how exactly should it be (de)serialized?
@@ -848,7 +848,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 </span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">_role_to_ast</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">role</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">Role</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#204a87">dict</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># Role -&gt; AST</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">'name'</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">role</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#000">name</span><span style="color:#000;font-weight:bold">}</span>
 </span></span></code></pre></div></div>
-<div class="col " style="text-align: left;"><figure id="plantuml-figure-1730140396280416540" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<div class="col " style="text-align: left;"><figure id="plantuml-figure-1731505442313527222" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
 <p>class Serializer {
 +serialize(obj: object) : str
 -_ast_to_string(data) : str
@@ -858,7 +858,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 }</p>
 </figure>
 <script>
-    handlePlantumlFigureByID("plantuml-figure-1730140396280416540");
+    handlePlantumlFigureByID("plantuml-figure-1731505442313527222");
 </script>
 </div>
 </div>
@@ -925,7 +925,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 </span></span><span style="display:flex;"><span>    <span style="color:#204a87;font-weight:bold">def</span> <span style="color:#000">_role_from_ast</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3465a4">self</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">data</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#000">Role</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#8f5902;font-style:italic"># AST -&gt; Role</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">Role</span><span style="color:#000;font-weight:bold">[</span><span style="color:#000">data</span><span style="color:#000;font-weight:bold">[</span><span style="color:#4e9a06">'name'</span><span style="color:#000;font-weight:bold">]]</span>
 </span></span></code></pre></div></div>
-<div class="col " style="text-align: left;"><figure id="plantuml-figure-1730140396288472174" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<div class="col " style="text-align: left;"><figure id="plantuml-figure-1731505442319897756" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
 <p>class Deserializer {
 +deserialize(string) : object
 -_ast_to_string(data) : object
@@ -935,7 +935,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 }</p>
 </figure>
 <script>
-    handlePlantumlFigureByID("plantuml-figure-1730140396288472174");
+    handlePlantumlFigureByID("plantuml-figure-1731505442319897756");
 </script>
 </div>
 </div>
@@ -1110,7 +1110,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 </span></span></code></pre></div></li>
 </ol>
 </div>
-<div class="col col-2" style="text-align: left;"><figure id="plantuml-figure-1730140396296503165" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
+<div class="col col-2" style="text-align: left;"><figure id="plantuml-figure-1731505442331581423" class="plantuml" alt="" style="width: 100%;max-width: 95vw;max-height: 80vh;">
 <p>class Request {
 + name: str
 + args: tuple
@@ -1122,7 +1122,7 @@ AuthenticationService &lt;|.. InMemoryAuthenticationService
 }</p>
 </figure>
 <script>
-    handlePlantumlFigureByID("plantuml-figure-1730140396296503165");
+    handlePlantumlFigureByID("plantuml-figure-1731505442331581423");
 </script>
 <ol start="6">
 <li>Run with <code>python -m snippets -l 4 -e 1</code></li>
@@ -1181,7 +1181,7 @@ as if the procedure was <em>locally</em> executed, despite the <em>server</em> b
 </ul>
 </section><section>
 <h2 id="common-rpc-infrastructure">Common RPC Infrastructure</h2>
-<img src="./rpc-dataflow1.png" alt="" style="height: 50vh; max-width: 95vw; max-height: 80vh; object-fit: contain;">
+<img src="./rpc-dataflow1.png" alt="" style="height: 40vh; max-width: 95vw; max-height: 80vh; object-fit: contain;">
 <ul>
 <li><strong>protocol</strong>: the low level <em>transfer</em> protocol (e.g. <em>HTTP</em>, <em>TCP</em>, <em>UDP</em>, etc.) + <em>data representation format</em> (e.g. <em>JSON</em>, <em>XML</em>, <em>binary</em>, etc.)</li>
 <li><strong>client stub</strong>: a <em>proxy</em> object that <strong>mimics</strong> the <em>server</em> <em>interface</em> on the <em>client</em> side</li>
@@ -1226,7 +1226,7 @@ as if the procedure was <em>locally</em> executed, despite the <em>server</em> b
 </li>
 </ul>
 <div class="container w-100 m-0 p-0">
-    <div class="row "><div class="col col-3" style="text-align: left;"><figure id="plantuml-figure-1730140396298045920" class="plantuml" alt="" style="width: 100%;height: 60vh;max-width: 95vw;max-height: 80vh;">
+    <div class="row "><div class="col col-3" style="text-align: left;"><figure id="plantuml-figure-1731505442334156741" class="plantuml" alt="" style="width: 100%;height: 60vh;max-width: 95vw;max-height: 80vh;">
 <p>class Request {
 + name: str
 + args: tuple
@@ -1238,10 +1238,10 @@ as if the procedure was <em>locally</em> executed, despite the <em>server</em> b
 }</p>
 </figure>
 <script>
-    handlePlantumlFigureByID("plantuml-figure-1730140396298045920");
+    handlePlantumlFigureByID("plantuml-figure-1731505442334156741");
 </script>
 </div>
-<div class="col " style="text-align: left;"><figure id="plantuml-figure-1730140396298109849" class="plantuml" alt="" style="width: 100%;height: 60vh;max-width: 95vw;max-height: 80vh;">
+<div class="col " style="text-align: left;"><figure id="plantuml-figure-1731505442334254544" class="plantuml" alt="" style="width: 100%;height: 60vh;max-width: 95vw;max-height: 80vh;">
 <p>@startuml
 hide footbox</p>
 <p>actor Client
@@ -1277,7 +1277,7 @@ end
 @enduml</p>
 </figure>
 <script>
-    handlePlantumlFigureByID("plantuml-figure-1730140396298109849");
+    handlePlantumlFigureByID("plantuml-figure-1731505442334254544");
 </script>
 </div>
 </div>
@@ -1647,7 +1647,7 @@ end
 </section><section>
 <h1 id="lecture-is-over">Lecture is Over</h1>
 <br>
-<p>Compiled on: 2024-10-28
+<p>Compiled on: 2024-11-13
  — <a href="?print-pdf&amp;pdfSeparateFragments=false"><i class="fa fa-print" aria-hidden="true"></i> printable version</a></p>
 <p><a href="../#/toc"><i class="fa fa-undo" aria-hidden="true"></i> back to ToC</a></p>
 </section>
